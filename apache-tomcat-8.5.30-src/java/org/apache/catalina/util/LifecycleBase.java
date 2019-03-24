@@ -96,6 +96,10 @@ public abstract class LifecycleBase implements Lifecycle {
     }
 
 
+    /**
+     * 初始化生命周期
+     * @throws LifecycleException
+     */
     @Override
     public final synchronized void init() throws LifecycleException {
         if (!state.equals(LifecycleState.NEW)) {
@@ -103,8 +107,11 @@ public abstract class LifecycleBase implements Lifecycle {
         }
 
         try {
+            //设置状态为初始化中...
             setStateInternal(LifecycleState.INITIALIZING, null, false);
+            //执行初始化
             initInternal();
+            //设置内部状态为已经初始化
             setStateInternal(LifecycleState.INITIALIZED, null, false);
         } catch (Throwable t) {
             ExceptionUtils.handleThrowable(t);
@@ -119,6 +126,7 @@ public abstract class LifecycleBase implements Lifecycle {
 
     /**
      * {@inheritDoc}
+     * 实际被调用对象
      */
     @Override
     public final synchronized void start() throws LifecycleException {
@@ -146,7 +154,9 @@ public abstract class LifecycleBase implements Lifecycle {
         }
 
         try {
+            // 设置生命周期的状态为 预启动...
             setStateInternal(LifecycleState.STARTING_PREP, null, false);
+            // 执行启动
             startInternal();
             if (state.equals(LifecycleState.FAILED)) {
                 // This is a 'controlled' failure. The component put itself into the
@@ -157,6 +167,7 @@ public abstract class LifecycleBase implements Lifecycle {
                 // doing what they are supposed to.
                 invalidTransition(Lifecycle.AFTER_START_EVENT);
             } else {
+                // 启动成功
                 setStateInternal(LifecycleState.STARTED, null, false);
             }
         } catch (Throwable t) {

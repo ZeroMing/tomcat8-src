@@ -56,6 +56,7 @@ import org.apache.tomcat.util.res.StringManager;
 /**
  * Standard implementation of the <b>Server</b> interface, available for use
  * (but not required) when deploying and starting Catalina.
+ * 不可被继承。标准 Server。继承自 LifecycleMBeanBase。实现 Server接口。
  *
  * @author Craig R. McClanahan
  */
@@ -781,15 +782,18 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
      */
     @Override
     protected void startInternal() throws LifecycleException {
-
+        // 触发 生命周期的 启动事件
         fireLifecycleEvent(CONFIGURE_START_EVENT, null);
+        //设置状态为 启动中...
         setState(LifecycleState.STARTING);
 
+        // 全局命名资源
         globalNamingResources.start();
 
         // Start our defined Services
         synchronized (servicesLock) {
             for (int i = 0; i < services.length; i++) {
+                // 循环启动 service
                 services[i].start();
             }
         }

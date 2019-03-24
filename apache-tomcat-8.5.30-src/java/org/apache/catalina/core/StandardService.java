@@ -402,6 +402,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
 
 
     /**
+     * 实际调用启动Service
      * Start nested components ({@link Executor}s, {@link Connector}s and
      * {@link Container}s) and implement the requirements of
      * {@link org.apache.catalina.util.LifecycleBase#startInternal()}.
@@ -423,12 +424,13 @@ public class StandardService extends LifecycleMBeanBase implements Service {
             }
         }
 
+        // 启动 执行器
         synchronized (executors) {
             for (Executor executor: executors) {
                 executor.start();
             }
         }
-
+        // TODO 2019-3-25
         mapperListener.start();
 
         // Start our defined Connectors second

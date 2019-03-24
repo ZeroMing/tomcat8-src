@@ -277,6 +277,7 @@ public class Digester extends DefaultHandler2 {
 
     /**
      * The object stack being constructed.
+     * 构造的对象栈
      */
     protected ArrayStack<Object> stack = new ArrayStack<>();
 
@@ -1702,7 +1703,7 @@ public class Digester extends DefaultHandler2 {
      * @see ObjectCreateRule
      */
     public void addObjectCreate(String pattern, String className, String attributeName) {
-
+        // 添加规则
         addRule(pattern, new ObjectCreateRule(className, attributeName));
 
     }

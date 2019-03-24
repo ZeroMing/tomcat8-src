@@ -99,6 +99,7 @@ public class Catalina {
 
     /**
      * The server component we are starting or stopping.
+     *
      */
     protected Server server = null;
 
@@ -117,6 +118,7 @@ public class Catalina {
 
     /**
      * Is naming enabled ?
+     * 启动命名服务
      */
     protected boolean useNaming = true;
 
@@ -270,6 +272,7 @@ public class Catalina {
 
     /**
      * Create and configure the Digester we will be using for startup.
+     * 创建一系列的解析规则
      * @return the main digester to parse server.xml
      */
     protected Digester createStartDigester() {
@@ -285,6 +288,7 @@ public class Catalina {
         digester.setFakeAttributes(fakeAttributes);
         digester.setUseContextClassLoader(true);
 
+        // Server 节点配置 -默认为 StandardServer
         // Configure the actions we will be using
         digester.addObjectCreate("Server",
                                  "org.apache.catalina.core.StandardServer",
@@ -301,6 +305,7 @@ public class Catalina {
                             "setGlobalNamingResources",
                             "org.apache.catalina.deploy.NamingResourcesImpl");
 
+        // Server/Listener 节点配置-LifecycleListener
         digester.addObjectCreate("Server/Listener",
                                  null, // MUST be specified in the element
                                  "className");
@@ -309,6 +314,7 @@ public class Catalina {
                             "addLifecycleListener",
                             "org.apache.catalina.LifecycleListener");
 
+        // Server/Service 节点配置-StandardService
         digester.addObjectCreate("Server/Service",
                                  "org.apache.catalina.core.StandardService",
                                  "className");
@@ -317,6 +323,7 @@ public class Catalina {
                             "addService",
                             "org.apache.catalina.Service");
 
+        // Server/Service/Listener 节点配置-LifecycleListener
         digester.addObjectCreate("Server/Service/Listener",
                                  null, // MUST be specified in the element
                                  "className");
@@ -325,7 +332,7 @@ public class Catalina {
                             "addLifecycleListener",
                             "org.apache.catalina.LifecycleListener");
 
-        //Executor
+        // Server/Service/Executor 节点配置
         digester.addObjectCreate("Server/Service/Executor",
                          "org.apache.catalina.core.StandardThreadExecutor",
                          "className");
@@ -335,7 +342,7 @@ public class Catalina {
                             "addExecutor",
                             "org.apache.catalina.Executor");
 
-
+        // Server/Service/Connector 节点配置
         digester.addRule("Server/Service/Connector",
                          new ConnectorCreateRule());
         digester.addRule("Server/Service/Connector",
@@ -344,6 +351,7 @@ public class Catalina {
                             "addConnector",
                             "org.apache.catalina.connector.Connector");
 
+        // Server/Service/Connector/SSLHostConfig SSL主机节点配置
         digester.addObjectCreate("Server/Service/Connector/SSLHostConfig",
                                  "org.apache.tomcat.util.net.SSLHostConfig");
         digester.addSetProperties("Server/Service/Connector/SSLHostConfig");
@@ -351,6 +359,7 @@ public class Catalina {
                 "addSslHostConfig",
                 "org.apache.tomcat.util.net.SSLHostConfig");
 
+        // SSL证书节点配置
         digester.addRule("Server/Service/Connector/SSLHostConfig/Certificate",
                          new CertificateCreateRule());
         digester.addRule("Server/Service/Connector/SSLHostConfig/Certificate",
@@ -359,6 +368,7 @@ public class Catalina {
                             "addCertificate",
                             "org.apache.tomcat.util.net.SSLHostConfigCertificate");
 
+        // OpenSSLConf 节点配置
         digester.addObjectCreate("Server/Service/Connector/SSLHostConfig/OpenSSLConf",
                                  "org.apache.tomcat.util.net.openssl.OpenSSLConf");
         digester.addSetProperties("Server/Service/Connector/SSLHostConfig/OpenSSLConf");
@@ -373,6 +383,7 @@ public class Catalina {
                             "addCmd",
                             "org.apache.tomcat.util.net.openssl.OpenSSLConfCmd");
 
+        // Server/Service/Connector/Listener 节点配置
         digester.addObjectCreate("Server/Service/Connector/Listener",
                                  null, // MUST be specified in the element
                                  "className");
@@ -381,6 +392,7 @@ public class Catalina {
                             "addLifecycleListener",
                             "org.apache.catalina.LifecycleListener");
 
+        // 升级的协议 节点配置
         digester.addObjectCreate("Server/Service/Connector/UpgradeProtocol",
                                   null, // MUST be specified in the element
                                   "className");
@@ -392,14 +404,20 @@ public class Catalina {
         // Add RuleSets for nested elements
         digester.addRuleSet(new NamingRuleSet("Server/GlobalNamingResources/"));
         digester.addRuleSet(new EngineRuleSet("Server/Service/"));
+        // Server/Service/Engine/ 节点配置
         digester.addRuleSet(new HostRuleSet("Server/Service/Engine/"));
+        // Server/Service/Engine/Host/ 节点配置
         digester.addRuleSet(new ContextRuleSet("Server/Service/Engine/Host/"));
+        // 集群主机
         addClusterRuleSet(digester, "Server/Service/Engine/Host/Cluster/");
+        // 主机上下文
         digester.addRuleSet(new NamingRuleSet("Server/Service/Engine/Host/Context/"));
 
         // When the 'engine' is found, set the parentClassLoader.
+        // 设置类加载器给【引擎】
         digester.addRule("Server/Service/Engine",
                          new SetParentClassLoaderRule(parentClassLoader));
+        // 引擎集群
         addClusterRuleSet(digester, "Server/Service/Engine/Cluster/");
 
         long t2=System.currentTimeMillis();
@@ -520,9 +538,12 @@ public class Catalina {
 
     /**
      * Start a new server instance.
+     * 创建一个server实例
+     *
      */
     public void load() {
 
+        // 判断是否已经加载
         if (loaded) {
             return;
         }
@@ -533,12 +554,14 @@ public class Catalina {
         //初始化临时工作空间目录，默认为C盘下
         initDirs();
 
-        // Before digester - it may be needed
-        //digester Apache的 XML解析器
+
+        // Before digester - it may be needed。命名接口服务。JNDI。
+        // digester Apache的 XML解析器
+        // Digester底层采用SAX解析XML文件，所以很自然的，对象转换由"事件"驱动
         initNaming();
 
         // Create and execute our Digester
-        //定义了一系列的解析规则
+        //定义了一系列的XML解析规则 以及 server.xml中的配置信息。
         Digester digester = createStartDigester();
 
         InputSource inputSource = null;
@@ -571,6 +594,7 @@ public class Catalina {
 
             // This should be included in catalina.jar
             // Alternative: don't bother with xml, just create it manually.
+            // 建议包含在catalina.jar。也可以自定义配置文件。
             if (inputStream == null) {
                 try {
                     inputStream = getClass().getClassLoader()
@@ -588,6 +612,7 @@ public class Catalina {
 
 
             if (inputStream == null || inputSource == null) {
+                log.info(">>>>>Eden.Lee>>>>> " + "catalina配置信息发生错误");
                 if  (file == null) {
                     log.warn(sm.getString("catalina.configFail",
                             getConfigFile() + "] or [server-embed.xml]"));
@@ -603,7 +628,9 @@ public class Catalina {
 
             try {
                 inputSource.setByteStream(inputStream);
+                // 放入对象栈中
                 digester.push(this);
+                // 根据上述操作中配置的一系列解析规则 开始解析配置文件流
                 digester.parse(inputSource);
             } catch (SAXParseException spe) {
                 log.warn("Catalina.start using " + getConfigFile() + ": " +
@@ -622,16 +649,18 @@ public class Catalina {
                 }
             }
         }
-
+        //设置server
         getServer().setCatalina(this);
         getServer().setCatalinaHome(Bootstrap.getCatalinaHomeFile());
         getServer().setCatalinaBase(Bootstrap.getCatalinaBaseFile());
 
-        // Stream redirection
+        // Stream redirection 重定向流
         initStreams();
 
         // Start the new server
         try {
+            //开始执行初始化。实际调用子类org.apache.catalina.core.StandardServer的初始化方法。
+            //PS:改类信息在前面的解析过程中已经设置过。
             getServer().init();
         } catch (LifecycleException e) {
             if (Boolean.getBoolean("org.apache.catalina.startup.EXIT_ON_INIT_FAILURE")) {
@@ -681,6 +710,7 @@ public class Catalina {
 
         // Start the new server
         try {
+            // 实际调用 父类org.apache.catalina.util.LifecycleBase中实现父类Lifecycle接口的init方法
             getServer().start();
         } catch (LifecycleException e) {
             log.fatal(sm.getString("catalina.serverStartFail"), e);
@@ -788,41 +818,57 @@ public class Catalina {
     }
 
 
+    /**
+     * 初始化工作空间目录
+     */
     protected void initDirs() {
+        // 默认工作文件目录
         String temp = System.getProperty("java.io.tmpdir");
+        log.info(">>>Eden.Lee java.io.tmpdir:" + temp);
+        // 如果地址为空 或者 地址不是一个非空的文件目录
         if (temp == null || (!(new File(temp)).isDirectory())) {
             log.error(sm.getString("embedded.notmp", temp));
         }
     }
 
 
+    /**
+     * 重新定义输出流
+     */
     protected void initStreams() {
         // Replace System.out and System.err with a custom PrintStream
         System.setOut(new SystemLogHandler(System.out));
         System.setErr(new SystemLogHandler(System.err));
     }
 
-
+    /**
+     * 初始化命名服务
+     */
     protected void initNaming() {
         // Setting additional variables
         if (!useNaming) {
             log.info( "Catalina naming disabled");
+            log.info( ">>>>>Eden.Lee>>>>> Catalina naming disabled");
             System.setProperty("catalina.useNaming", "false");
         } else {
             System.setProperty("catalina.useNaming", "true");
             String value = "org.apache.naming";
+            // java.naming.factory.url.pkgs
             String oldValue =
                 System.getProperty(javax.naming.Context.URL_PKG_PREFIXES);
             if (oldValue != null) {
                 value = value + ":" + oldValue;
             }
             System.setProperty(javax.naming.Context.URL_PKG_PREFIXES, value);
+            log.info(">>>>>Eden.Lee>>>>>" + value);
             if( log.isDebugEnabled() ) {
                 log.debug("Setting naming prefix=" + value);
             }
+            // 初始化上下文工厂类信息，应该是完成的类名
             value = System.getProperty
                 (javax.naming.Context.INITIAL_CONTEXT_FACTORY);
             if (value == null) {
+                //
                 System.setProperty
                     (javax.naming.Context.INITIAL_CONTEXT_FACTORY,
                      "org.apache.naming.java.javaURLContextFactory");

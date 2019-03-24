@@ -56,16 +56,23 @@ public final class Bootstrap {
      */
     private static Bootstrap daemon = null;
 
+    // 默认的 catalinaBaseFile
     private static final File catalinaBaseFile;
+    // 默认的 catalinaHomeFile
     private static final File catalinaHomeFile;
 
     private static final Pattern PATH_PATTERN = Pattern.compile("(\".*?\")|(([^,])*)");
 
+    /**
+     * 类初始化中，如果用户自定义了配置文件，就执行用户的定义文件，否则执行默认的文件。
+     */
     static {
         // Will always be non-null
+        // 用户目录
         String userDir = System.getProperty("user.dir");
 
         // Home first
+        // catalina.home
         String home = System.getProperty(Globals.CATALINA_HOME_PROP);
         File homeFile = null;
 
@@ -108,6 +115,7 @@ public final class Bootstrap {
                 Globals.CATALINA_HOME_PROP, catalinaHomeFile.getPath());
 
         // Then base
+        // catalina.base
         String base = System.getProperty(Globals.CATALINA_BASE_PROP);
         if (base == null) {
             catalinaBaseFile = catalinaHomeFile;
@@ -258,9 +266,9 @@ public final class Bootstrap {
         //初始化类加载器，知识点:java的类加载器类型
         initClassLoaders();
 
-        //当前下称设置上下文类加载器
+        //当前线程设置【上下文类加载器】
         Thread.currentThread().setContextClassLoader(catalinaLoader);
-
+        // 安全管理器
         SecurityClassLoad.securityClassLoad(catalinaLoader);
 
         // Load our startup class and call its process() method
@@ -288,6 +296,7 @@ public final class Bootstrap {
 
     /**
      * Load daemon.
+     * 加载 守护进程
      */
     private void load(String[] arguments)
         throws Exception {
@@ -346,10 +355,12 @@ public final class Bootstrap {
 
     /**
      * Start the Catalina daemon.
+     * 启动卡特玲娜实例
      * @throws Exception Fatal start error
      */
     public void start()
         throws Exception {
+        // 判断 实例是否为空
         if( catalinaDaemon==null ) init();
 
         Method method = catalinaDaemon.getClass().getMethod("start", (Class [] )null);
@@ -454,15 +465,19 @@ public final class Bootstrap {
     /**
      * Main method and entry point when starting Tomcat via the provided
      * scripts.
+     * 通过所提供的方法启动Tomcat时的主方法和入口点脚本。
      *
      * @param args Command line arguments to be processed
      */
     public static void main(String args[]) {
 
+        // 如果当前类为空
         if (daemon == null) {
             // Don't set daemon until init() has completed
+            // 直到init()方法执行完毕再设置 daemon
             Bootstrap bootstrap = new Bootstrap();
             try {
+                // 进行启动类的初始化
                 bootstrap.init();
             } catch (Throwable t) {
                 handleThrowable(t);
@@ -485,7 +500,9 @@ public final class Bootstrap {
 
             if (command.equals("startd")) {
                 args[args.length - 1] = "start";
+                // 根据命令参数加载信息
                 daemon.load(args);
+                //启动
                 daemon.start();
             } else if (command.equals("stopd")) {
                 args[args.length - 1] = "stop";
