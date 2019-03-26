@@ -1043,8 +1043,11 @@ public abstract class AbstractEndpoint<S> {
             } else {
                 sc.reset(socketWrapper, event);
             }
+            // 开启线程池处理
             Executor executor = getExecutor();
             if (dispatch && executor != null) {
+                //处理 SocketProcessorBase
+                // 工作线程
                 executor.execute(sc);
             } else {
                 sc.run();
@@ -1090,7 +1093,7 @@ public abstract class AbstractEndpoint<S> {
             // Register endpoint (as ThreadPool - historical name)
             oname = new ObjectName(domain + ":type=ThreadPool,name=\"" + getName() + "\"");
             Registry.getRegistry(null, null).registerComponent(this, oname, null);
-
+            // 如果有ssl主机配置，需要注册
             for (SSLHostConfig sslHostConfig : findSslHostConfigs()) {
                 registerJmx(sslHostConfig);
             }

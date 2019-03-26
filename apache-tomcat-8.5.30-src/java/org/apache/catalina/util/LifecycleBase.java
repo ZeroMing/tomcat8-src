@@ -143,11 +143,13 @@ public abstract class LifecycleBase implements Lifecycle {
 
             return;
         }
-
+        // 新生状态
         if (state.equals(LifecycleState.NEW)) {
             init();
+            //失败
         } else if (state.equals(LifecycleState.FAILED)) {
             stop();
+            //没有初始化完毕或者停止
         } else if (!state.equals(LifecycleState.INITIALIZED) &&
                 !state.equals(LifecycleState.STOPPED)) {
             invalidTransition(Lifecycle.BEFORE_START_EVENT);

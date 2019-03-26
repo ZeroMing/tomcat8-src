@@ -81,11 +81,13 @@ public class Catalina {
 
     /**
      * Use await.
+     * 等待
      */
     protected boolean await = false;
 
     /**
      * Pathname to the server configuration file.
+     * server.xml文件
      */
     protected String configFile = "conf/server.xml";
 
@@ -323,7 +325,7 @@ public class Catalina {
                             "addService",
                             "org.apache.catalina.Service");
 
-        // Server/Service/Listener 节点配置-LifecycleListener
+        // Server/Service/Listener 节点配置-LifecycleListener[监听器，监听生命周期]
         digester.addObjectCreate("Server/Service/Listener",
                                  null, // MUST be specified in the element
                                  "className");
@@ -332,7 +334,7 @@ public class Catalina {
                             "addLifecycleListener",
                             "org.apache.catalina.LifecycleListener");
 
-        // Server/Service/Executor 节点配置
+        // Server/Service/Executor 节点配置-org.apache.catalina.core.StandardThreadExecutor
         digester.addObjectCreate("Server/Service/Executor",
                          "org.apache.catalina.core.StandardThreadExecutor",
                          "className");
@@ -569,6 +571,7 @@ public class Catalina {
         File file = null;
         try {
             try {
+                // 获取默认的 配置文件为 conf/server.xml
                 file = configFile();
                 inputStream = new FileInputStream(file);
                 inputSource = new InputSource(file.toURI().toURL().toString());
@@ -654,7 +657,7 @@ public class Catalina {
         getServer().setCatalinaHome(Bootstrap.getCatalinaHomeFile());
         getServer().setCatalinaBase(Bootstrap.getCatalinaBaseFile());
 
-        // Stream redirection 重定向流
+        // Stream redirection 重定向流。输出信息
         initStreams();
 
         // Start the new server
@@ -683,6 +686,7 @@ public class Catalina {
     public void load(String args[]) {
 
         try {
+            // 解析参数
             if (arguments(args)) {
                 load();
             }
@@ -694,6 +698,7 @@ public class Catalina {
 
     /**
      * Start a new server instance.
+     * 开始一个server实例
      */
     public void start() {
 
@@ -727,7 +732,7 @@ public class Catalina {
             log.info("Server startup in " + ((t2 - t1) / 1000000) + " ms");
         }
 
-        // Register shutdown hook
+        // Register shutdown hook 注册钩子函数
         if (useShutdownHook) {
             if (shutdownHook == null) {
                 shutdownHook = new CatalinaShutdownHook();

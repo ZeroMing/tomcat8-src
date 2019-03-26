@@ -533,7 +533,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
             engine.init();
         }
 
-        // Initialize any Executors
+        // Initialize any Executors 执行器
         for (Executor executor : findExecutors()) {
             if (executor instanceof JmxEnabled) {
                 ((JmxEnabled) executor).setDomain(getDomain());
@@ -544,10 +544,11 @@ public class StandardService extends LifecycleMBeanBase implements Service {
         // Initialize mapper listener
         mapperListener.init();
 
-        // Initialize our defined Connectors
+        // Initialize our defined Connectors 初始化连接器
         synchronized (connectorsLock) {
             for (Connector connector : connectors) {
                 try {
+                    // 初始化连接器
                     connector.init();
                 } catch (Exception e) {
                     String message = sm.getString(

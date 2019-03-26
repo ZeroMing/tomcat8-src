@@ -136,7 +136,9 @@ public final class Bootstrap {
 
 
     /**
-     * Daemon reference.
+     * Daemon reference.  org.apache.catalina.startup.Catalina
+     * 卡特玲娜
+     *
      */
     private Object catalinaDaemon = null;
 
@@ -151,6 +153,7 @@ public final class Bootstrap {
 
     private void initClassLoaders() {
         try {
+            // 自定义ClassLoader加载器
             commonLoader = createClassLoader("common", null);
             if( commonLoader == null ) {
                 // no config file, default to this loader - we might be in a 'single' env.
@@ -165,7 +168,13 @@ public final class Bootstrap {
         }
     }
 
-
+    /**
+     * 创建自定义ClassLoader
+     * @param name
+     * @param parent
+     * @return
+     * @throws Exception
+     */
     private ClassLoader createClassLoader(String name, ClassLoader parent)
         throws Exception {
 
@@ -274,6 +283,7 @@ public final class Bootstrap {
         // Load our startup class and call its process() method
         if (log.isDebugEnabled())
             log.debug("Loading startup class");
+        // 反射获取
         Class<?> startupClass = catalinaLoader.loadClass("org.apache.catalina.startup.Catalina");
         Object startupInstance = startupClass.getConstructor().newInstance();
 
@@ -287,8 +297,9 @@ public final class Bootstrap {
         paramValues[0] = sharedLoader;
         Method method =
             startupInstance.getClass().getMethod(methodName, paramTypes);
+        // 反射调用invoke
         method.invoke(startupInstance, paramValues);
-
+        // org.apache.catalina.startup.Catalina
         catalinaDaemon = startupInstance;
 
     }
@@ -297,11 +308,15 @@ public final class Bootstrap {
     /**
      * Load daemon.
      * 加载 守护进程
+     *
+     * 大量使用反射的好处是解耦。
+     * 可以不依赖应用层的classpath独立加载，通过catalina.home指定相应的目录就可以了，对应用程序不可见
+     *
      */
     private void load(String[] arguments)
         throws Exception {
 
-        // Call the load() method
+        // Call the load() method 反射
         String methodName = "load";
         Object param[];
         Class<?> paramTypes[];
@@ -314,6 +329,7 @@ public final class Bootstrap {
             param = new Object[1];
             param[0] = arguments;
         }
+        //反射调用  catalina的load方法
         Method method =
             catalinaDaemon.getClass().getMethod(methodName, paramTypes);
         if (log.isDebugEnabled())
@@ -429,7 +445,7 @@ public final class Bootstrap {
      */
     public void setAwait(boolean await)
         throws Exception {
-
+        // 反射
         Class<?> paramTypes[] = new Class[1];
         paramTypes[0] = Boolean.TYPE;
         Object paramValues[] = new Object[1];
@@ -493,6 +509,7 @@ public final class Bootstrap {
         }
 
         try {
+            // 启动命令
             String command = "start";
             if (args.length > 0) {
                 command = args[args.length - 1];
@@ -508,6 +525,7 @@ public final class Bootstrap {
                 args[args.length - 1] = "stop";
                 daemon.stop();
             } else if (command.equals("start")) {
+                // 设置等待标志为 true
                 daemon.setAwait(true);
                 //加载信息
                 daemon.load(args);

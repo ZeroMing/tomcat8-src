@@ -1115,6 +1115,8 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
 
     /**
      * Async timeout thread
+     * 异步超时线程
+     *
      */
     protected class AsyncTimeout implements Runnable {
 

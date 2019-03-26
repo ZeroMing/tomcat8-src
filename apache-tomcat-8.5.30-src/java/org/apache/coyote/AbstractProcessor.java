@@ -635,6 +635,8 @@ public abstract class AbstractProcessor extends AbstractProcessorLight implement
     /**
      * Processors that can perform a TLS re-handshake (e.g. HTTP/1.1) should
      * override this method and implement the re-handshake.
+     * 能够执行TLS【安全传输层协议】重新握手(例如HTTP/1.1)的处理器
+     * 需要覆盖此方法并实现重新握手。
      *
      * @throws IOException If authentication is required then there will be I/O
      *                     with the client and this exception will be thrown if

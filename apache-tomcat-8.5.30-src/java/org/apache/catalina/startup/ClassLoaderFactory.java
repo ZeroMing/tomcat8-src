@@ -83,7 +83,7 @@ public final class ClassLoaderFactory {
         // Construct the "class path" for this class loader
         Set<URL> set = new LinkedHashSet<>();
 
-        // Add unpacked directories
+        // Add unpacked directories 空的目录
         if (unpacked != null) {
             for (int i = 0; i < unpacked.length; i++)  {
                 File file = unpacked[i];
@@ -97,7 +97,7 @@ public final class ClassLoaderFactory {
             }
         }
 
-        // Add packed directory JAR files
+        // Add packed directory JAR files JAR文件目录
         if (packed != null) {
             for (int i = 0; i < packed.length; i++) {
                 File directory = packed[i];
@@ -109,6 +109,7 @@ public final class ClassLoaderFactory {
                 }
                 for (int j = 0; j < filenames.length; j++) {
                     String filename = filenames[j].toLowerCase(Locale.ENGLISH);
+                    //非*.jar文件被跳过
                     if (!filename.endsWith(".jar"))
                         continue;
                     File file = new File(directory, filenames[j]);
@@ -122,6 +123,7 @@ public final class ClassLoaderFactory {
 
         // Construct the class loader itself
         final URL[] array = set.toArray(new URL[set.size()]);
+        //
         return AccessController.doPrivileged(
                 new PrivilegedAction<URLClassLoader>() {
                     @Override

@@ -56,6 +56,8 @@ import org.apache.tomcat.util.net.jsse.JSSESupport;
 
 /**
  * NIO2 endpoint.
+ *
+ * NIO
  */
 public class Nio2Endpoint extends AbstractJsseEndpoint<Nio2Channel> {
 
@@ -70,6 +72,7 @@ public class Nio2Endpoint extends AbstractJsseEndpoint<Nio2Channel> {
 
     /**
      * Server socket "pointer".
+     * 异步Channel
      */
     private AsynchronousServerSocketChannel serverSock = null;
 
@@ -80,6 +83,7 @@ public class Nio2Endpoint extends AbstractJsseEndpoint<Nio2Channel> {
 
     /**
      * Thread group associated with the server socket.
+     * 异步Channel组
      */
     private AsynchronousChannelGroup threadGroup = null;
 
@@ -87,6 +91,8 @@ public class Nio2Endpoint extends AbstractJsseEndpoint<Nio2Channel> {
 
     /**
      * Bytebuffer cache, each channel holds a set of buffers (two, except for SSL holds four)
+     * 字节缓冲区的cache
+     *
      */
     private SynchronizedStack<Nio2Channel> nioChannels;
 

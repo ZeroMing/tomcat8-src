@@ -9,7 +9,7 @@ Export-Package: org.apache.tomcat.jdbc.naming;uses:="javax.naming,org.ap
  ",org.apache.tomcat.jdbc.pool.jmx;uses:="org.apache.tomcat.jdbc.pool,or
  g.apache.juli.logging,javax.management";version="@VERSION@"
 Bundle-Vendor: Apache Software Foundation
-Bundle-Version: @VERSION@
+Bundle-Version: 1.1
 Bundle-Name: Apache Tomcat JDBC Connection Pool
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.apache.tomcat.jdbc
