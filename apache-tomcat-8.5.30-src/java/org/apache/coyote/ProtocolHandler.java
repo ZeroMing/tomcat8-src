@@ -25,9 +25,14 @@ import org.apache.tomcat.util.net.SSLHostConfig;
  * Processor is single threaded and specific to stream-based protocols,
  * will not fit Jk protocols like JNI.
  *
+ * 抽象协议的一种实现。包括线程等。
+ * Processor 是单线程并且基于流的协议，不处理 类似JNI的协议。
+ *
  * This is the main interface to be implemented by a coyote connector.
  * Adapter is the main interface to be implemented by a coyote servlet
  * container.
+ * 适配器是被 coyote servlet container 实现的主要接口
+ *
  *
  * @author Remy Maucherat
  * @author Costin Manolache

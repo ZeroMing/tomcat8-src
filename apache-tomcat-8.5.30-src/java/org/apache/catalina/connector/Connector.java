@@ -967,7 +967,8 @@ public class Connector extends LifecycleMBeanBase  {
 
         // Initialize adapter
         adapter = new CoyoteAdapter(this);
-        // 协议适配器
+
+        // 协议处理的适配器
         protocolHandler.setAdapter(adapter);
 
         // Make sure parseBodyMethodsSet has a default

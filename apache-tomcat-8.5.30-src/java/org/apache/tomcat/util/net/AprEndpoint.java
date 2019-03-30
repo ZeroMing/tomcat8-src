@@ -673,6 +673,7 @@ public class AprEndpoint extends AbstractEndpoint<Long> implements SNICallBack {
             running = true;
             paused = false;
 
+            // 处理器缓存
             processorCache = new SynchronizedStack<>(SynchronizedStack.DEFAULT_SIZE,
                     socketProperties.getProcessorCache());
 
@@ -680,7 +681,7 @@ public class AprEndpoint extends AbstractEndpoint<Long> implements SNICallBack {
             if (getExecutor() == null) {
                 createExecutor();
             }
-
+            // 初始化连接
             initializeConnectionLatch();
 
             // Start poller thread
@@ -702,6 +703,7 @@ public class AprEndpoint extends AbstractEndpoint<Long> implements SNICallBack {
                 sendfileThread.start();
             }
 
+            // 启动接收器线程
             startAcceptorThreads();
         }
     }

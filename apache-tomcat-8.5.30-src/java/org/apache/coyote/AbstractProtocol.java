@@ -588,6 +588,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
             getLog().info(sm.getString("abstractProtocolHandler.start", getName()));
         }
 
+        // endPoint 启动
         endpoint.start();
 
         // Start async timeout thread

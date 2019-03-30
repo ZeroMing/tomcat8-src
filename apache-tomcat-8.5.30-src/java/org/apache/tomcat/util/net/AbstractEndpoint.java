@@ -1020,6 +1020,7 @@ public abstract class AbstractEndpoint<S> {
     // ---------------------------------------------- Request processing methods
 
     /**
+     *
      * Process the given SocketWrapper with the given status. Used to trigger
      * processing as if the Poller (for those endpoints that have one)
      * selected the socket.
@@ -1037,17 +1038,23 @@ public abstract class AbstractEndpoint<S> {
             if (socketWrapper == null) {
                 return false;
             }
+            // 尝试循环利用之前回收的SocketProcessor对象，如果没有可回收利用的则
+            // 创建新的SocketProcessor对象
             SocketProcessorBase<S> sc = processorCache.pop();
             if (sc == null) {
+                // 缓存为空的时候，创建新的 SocketProcessorBase。，即Worker线程，基于线程池模式进行创建和管理
                 sc = createSocketProcessor(socketWrapper, event);
             } else {
+                // 循环利用回收的SocketProcessor对象
                 sc.reset(socketWrapper, event);
             }
+
             // 开启线程池处理
             Executor executor = getExecutor();
             if (dispatch && executor != null) {
                 //处理 SocketProcessorBase
                 // 工作线程
+                //SocketProcessor实现了Runneble接口，可以直接传入execute方法进行处理
                 executor.execute(sc);
             } else {
                 sc.run();
@@ -1157,6 +1164,7 @@ public abstract class AbstractEndpoint<S> {
     }
 
     protected final void startAcceptorThreads() {
+        //
         int count = getAcceptorThreadCount();
         acceptors = new Acceptor[count];
 
