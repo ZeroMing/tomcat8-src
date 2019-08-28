@@ -615,7 +615,7 @@ public class Catalina {
 
 
             if (inputStream == null || inputSource == null) {
-                log.info(">>>>>Eden.Lee>>>>> " + "catalina配置信息发生错误");
+                log.info(">>>>> " + "catalina配置信息发生错误");
                 if  (file == null) {
                     log.warn(sm.getString("catalina.configFail",
                             getConfigFile() + "] or [server-embed.xml]"));

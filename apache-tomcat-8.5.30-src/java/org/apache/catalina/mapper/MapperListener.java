@@ -100,9 +100,9 @@ public class MapperListener extends LifecycleMBeanBase
         if (engine == null) {
             return;
         }
-
+        // 查询默认主机
         findDefaultHost();
-
+        // 添加 监听器 到 引擎
         addListeners(engine);
 
         Container[] conHosts = engine.findChildren();

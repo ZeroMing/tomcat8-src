@@ -36,6 +36,11 @@ import java.util.regex.Pattern;
 
 
 /**
+ * 为卡特琳娜引导加载程序。这个应用程序构造了一个类装入器，用于装入Catalina内部类(通过积累在“Catalina .home”下的“server”目录中找到的所有JAR文件)，并开始容器的常规执行。
+ * 这种迂回方法的目的是保持Catalina内部类
+ * (以及它们所依赖的任何其他类，如XML解析器)
+ * 在系统类路径之外，因此对应用程序级类不可见。
+ *
  * Bootstrap loader for Catalina.  This application constructs a class loader
  * for use in loading the Catalina internal classes (by accumulating all of the
  * JAR files found in the "server" directory under "catalina.home"), and
@@ -142,15 +147,19 @@ public final class Bootstrap {
      */
     private Object catalinaDaemon = null;
 
-
+    // 用户加载器
     ClassLoader commonLoader = null;
+    // 卡特琳娜类加载器
     ClassLoader catalinaLoader = null;
+    // 共享加载器
     ClassLoader sharedLoader = null;
 
 
     // -------------------------------------------------------- Private Methods
 
-
+    /**
+     * 初始化类加载器: common、server、shared
+     */
     private void initClassLoaders() {
         try {
             // 自定义ClassLoader加载器
@@ -177,12 +186,12 @@ public final class Bootstrap {
      */
     private ClassLoader createClassLoader(String name, ClassLoader parent)
         throws Exception {
-
+        // 根据键 *.loader 获取对应的值
         String value = CatalinaProperties.getProperty(name + ".loader");
         if ((value == null) || (value.equals("")))
             return parent;
 
-        //替换为绝对路径
+        // 替换为绝对路径
         value = replace(value);
 
         List<Repository> repositories = new ArrayList<>();
@@ -192,6 +201,7 @@ public final class Bootstrap {
         for (String repository : repositoryPaths) {
             // Check for a JAR URL repository
             try {
+                // 未使用
                 @SuppressWarnings("unused")
                 URL url = new URL(repository);
                 repositories.add(
@@ -267,32 +277,37 @@ public final class Bootstrap {
 
 
     /**
+     * 初始化守护对象
      * Initialize daemon.
      * @throws Exception Fatal initialization error
      */
     public void init() throws Exception {
 
-        //初始化类加载器，知识点:java的类加载器类型
+        // 1. 初始化类加载器，知识点:java的类加载器类型
         initClassLoaders();
 
-        //当前线程设置【上下文类加载器】
+        // 2. 当前线程设置【上下文类加载器】
         Thread.currentThread().setContextClassLoader(catalinaLoader);
-        // 安全管理器
+        // 3. 安全管理器设置类加载器。启动安全管理器。
         SecurityClassLoad.securityClassLoad(catalinaLoader);
 
         // Load our startup class and call its process() method
         if (log.isDebugEnabled())
             log.debug("Loading startup class");
-        // 反射获取
+        // 反射获取启动类
         Class<?> startupClass = catalinaLoader.loadClass("org.apache.catalina.startup.Catalina");
         Object startupInstance = startupClass.getConstructor().newInstance();
 
+        // 设置共享扩展类加载器
         // Set the shared extensions class loader
         if (log.isDebugEnabled())
             log.debug("Setting startup class properties");
+        // 反射调用方法: setParentClassLoader
         String methodName = "setParentClassLoader";
+        // 参数类型:java.lang.ClassLoader
         Class<?> paramTypes[] = new Class[1];
         paramTypes[0] = Class.forName("java.lang.ClassLoader");
+        // 参数值: sharedLoader
         Object paramValues[] = new Object[1];
         paramValues[0] = sharedLoader;
         Method method =
@@ -334,6 +349,7 @@ public final class Bootstrap {
             catalinaDaemon.getClass().getMethod(methodName, paramTypes);
         if (log.isDebugEnabled())
             log.debug("Calling startup class " + method);
+        //  调用 org.apache.catalina.startup.Catalina的 load 方法
         method.invoke(catalinaDaemon, param);
 
     }
@@ -452,6 +468,7 @@ public final class Bootstrap {
         paramValues[0] = Boolean.valueOf(await);
         Method method =
             catalinaDaemon.getClass().getMethod("setAwait", paramTypes);
+        // 调用 org.apache.catalina.startup.Catalina的 setAwait 方法，设置等待标志为true
         method.invoke(catalinaDaemon, paramValues);
 
     }
@@ -487,7 +504,7 @@ public final class Bootstrap {
      */
     public static void main(String args[]) {
 
-        // 如果当前类为空
+        // 如果当前类的守护对象为空
         if (daemon == null) {
             // Don't set daemon until init() has completed
             // 直到init()方法执行完毕再设置 daemon
@@ -502,6 +519,8 @@ public final class Bootstrap {
             }
             daemon = bootstrap;
         } else {
+
+            // 当作为一个service 执行 stop操作，将在一个新的线程上，所以我们将确保正确的类加载器被使用，以防止发生未找到类的范围的异常。
             // When running as a service the call to stop will be on a new
             // thread so make sure the correct class loader is used to prevent
             // a range of class not found exceptions.
@@ -527,9 +546,9 @@ public final class Bootstrap {
             } else if (command.equals("start")) {
                 // 设置等待标志为 true
                 daemon.setAwait(true);
-                //加载信息
+                // 加载信息
                 daemon.load(args);
-                //
+                // 启动
                 daemon.start();
             } else if (command.equals("stop")) {
                 daemon.stopServer(args);

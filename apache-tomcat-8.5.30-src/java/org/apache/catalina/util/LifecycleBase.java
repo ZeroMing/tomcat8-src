@@ -156,6 +156,7 @@ public abstract class LifecycleBase implements Lifecycle {
         }
 
         try {
+            // 初始化完毕状态...
             // 设置生命周期的状态为 预启动...
             setStateInternal(LifecycleState.STARTING_PREP, null, false);
             // 执行启动
