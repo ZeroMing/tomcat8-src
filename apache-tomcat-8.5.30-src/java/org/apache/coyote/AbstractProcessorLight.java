@@ -45,6 +45,7 @@ public abstract class AbstractProcessorLight implements Processor {
         Iterator<DispatchType> dispatches = null;
         do {
             if (dispatches != null) {
+                // 请求分发器
                 DispatchType nextDispatch = dispatches.next();
                 state = dispatch(nextDispatch.getSocketStatus());
             } else if (status == SocketEvent.DISCONNECT) {

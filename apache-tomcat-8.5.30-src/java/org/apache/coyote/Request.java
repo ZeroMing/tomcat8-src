@@ -156,6 +156,9 @@ public final class Request {
     private long startTime = -1;
     private int available = 0;
 
+    /**
+     * 请求信息
+     */
     private final RequestInfo reqProcessorMX=new RequestInfo(this);
 
     private boolean sendfile = true;

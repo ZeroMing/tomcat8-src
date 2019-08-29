@@ -416,6 +416,7 @@ public class Request implements org.apache.catalina.servlet4preview.http.HttpSer
 
     /**
      * AsyncContext
+     * 异步上下文
      */
     private volatile AsyncContextImpl asyncContext = null;
 

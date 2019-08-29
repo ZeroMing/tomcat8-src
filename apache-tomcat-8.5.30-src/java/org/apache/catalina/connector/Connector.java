@@ -70,7 +70,12 @@ public class Connector extends LifecycleMBeanBase  {
         this(null);
     }
 
+    /**
+     * 传递一个协议名称构建 Connector 对象
+     * @param protocol
+     */
     public Connector(String protocol) {
+        // Tomcat9 废弃。 将必须被配置在构造器中
         setProtocol(protocol);
         // Instantiate protocol handler
         ProtocolHandler p = null;
@@ -254,7 +259,9 @@ public class Connector extends LifecycleMBeanBase  {
     @Deprecated
     protected String URIEncodingLower = null;
 
-
+    /**
+     * 默认 UTF-8
+     */
     private Charset uriCharset = StandardCharsets.UTF_8;
 
 
@@ -570,7 +577,7 @@ public class Connector extends LifecycleMBeanBase  {
 
     /**
      * Set the Coyote protocol which will be used by the connector.
-     *
+     * 设置将被连接器使用的协议处理器的类
      * @param protocol The Coyote protocol name
      *
      * @deprecated Will be removed in Tomcat 9. Protocol must be configured via
@@ -578,17 +585,21 @@ public class Connector extends LifecycleMBeanBase  {
      */
     @Deprecated
     public void setProtocol(String protocol) {
-
+        // 检测APR模式是否开启。如果开启会自动使用APR模式
         boolean aprConnector = AprLifecycleListener.isAprAvailable() &&
                 AprLifecycleListener.getUseAprConnector();
 
         if ("HTTP/1.1".equals(protocol) || protocol == null) {
+            // 如果是
             if (aprConnector) {
+                // APR 模式下协议处理类
                 setProtocolHandlerClassName("org.apache.coyote.http11.Http11AprProtocol");
             } else {
+                // NIO模式下
                 setProtocolHandlerClassName("org.apache.coyote.http11.Http11NioProtocol");
             }
         } else if ("AJP/1.3".equals(protocol)) {
+            // AJP13 协议。AJP13协议是面向分组，二进制格式传输，性能更好。对于传输静态文件而言。
             if (aprConnector) {
                 setProtocolHandlerClassName("org.apache.coyote.ajp.AjpAprProtocol");
             } else {
@@ -1003,6 +1014,7 @@ public class Connector extends LifecycleMBeanBase  {
 
     /**
      * Begin processing requests via this Connector.
+     * 开始处理请求通过连接器
      *
      * @exception LifecycleException if a fatal startup error occurs
      */
@@ -1019,6 +1031,7 @@ public class Connector extends LifecycleMBeanBase  {
         setState(LifecycleState.STARTING);
 
         try {
+            // 协议处理器开始启动执行
             protocolHandler.start();
         } catch (Exception e) {
             throw new LifecycleException(

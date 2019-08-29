@@ -47,6 +47,7 @@ public abstract class AbstractProcessor extends AbstractProcessorLight implement
     protected final AsyncStateMachine asyncStateMachine;
     private volatile long asyncTimeout = -1;
     protected final AbstractEndpoint<?> endpoint;
+    // Tomcat 内部请求
     protected final Request request;
     protected final Response response;
     protected volatile SocketWrapperBase<?> socketWrapper = null;
@@ -63,7 +64,12 @@ public abstract class AbstractProcessor extends AbstractProcessorLight implement
         this(endpoint, new Request(), new Response());
     }
 
-
+    /**
+     *
+     * @param endpoint
+     * @param coyoteRequest
+     * @param coyoteResponse
+     */
     protected AbstractProcessor(AbstractEndpoint<?> endpoint, Request coyoteRequest,
             Response coyoteResponse) {
         this.endpoint = endpoint;

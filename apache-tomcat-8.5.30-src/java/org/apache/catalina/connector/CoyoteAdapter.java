@@ -295,11 +295,21 @@ public class CoyoteAdapter implements Adapter {
     }
 
 
+    /**
+     * 处理Tomcat请求和返回
+     * @param req The request object
+     * @param res The response object
+     *
+     * @throws Exception
+     */
     @Override
     public void service(org.apache.coyote.Request req, org.apache.coyote.Response res)
             throws Exception {
 
+        // 真正到达了 Servlet 容器内部处理。
+        // 获取 javax.servlet.http.HttpServletRequest。
         Request request = (Request) req.getNote(ADAPTER_NOTES);
+        // 获取 javax.servlet.http.HttpServletResponse
         Response response = (Response) res.getNote(ADAPTER_NOTES);
 
         if (request == null) {
@@ -328,20 +338,25 @@ public class CoyoteAdapter implements Adapter {
         boolean async = false;
         boolean postParseSuccess = false;
 
+        // 设置工作线程的名称
         req.getRequestProcessor().setWorkerThreadName(THREAD_NAME.get());
 
         try {
+
             // Parse and set Catalina and configuration specific
             // request parameters
+            // 解析并且设置 Catalina 并且配置特定的请求参数。查找servlet
             postParseSuccess = postParseRequest(req, request, res, response);
             if (postParseSuccess) {
                 //check valves if we support async
                 request.setAsyncSupported(
                         connector.getService().getContainer().getPipeline().isAsyncSupported());
                 // Calling the container
+                // 执行各种链式Valve
                 connector.getService().getContainer().getPipeline().getFirst().invoke(
                         request, response);
             }
+            // 异步请求
             if (request.isAsync()) {
                 async = true;
                 ReadListener readListener = req.getReadListener();
@@ -577,6 +592,7 @@ public class CoyoteAdapter implements Adapter {
         MessageBytes undecodedURI = req.requestURI();
 
         // Check for ping OPTIONS * request
+        // 检查请求
         if (undecodedURI.equals("*")) {
             if (req.method().equalsIgnoreCase("OPTIONS")) {
                 StringBuilder allow = new StringBuilder();

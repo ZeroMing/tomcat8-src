@@ -25,6 +25,9 @@ import org.apache.tomcat.util.buf.ByteChunk;
  */
 public final class Constants {
 
+    /**
+     * 单位毫秒。客户端和服务器建立连接的timeout 1Min
+     */
     public static final int DEFAULT_CONNECTION_TIMEOUT = 60000;
 
 

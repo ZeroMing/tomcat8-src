@@ -186,6 +186,7 @@ public abstract class AbstractEndpoint<S> {
 
     /**
      * Threads used to accept new connections and pass them to worker threads.
+     * 用于接收新的连接，将它们推给工作线程。
      */
     protected Acceptor[] acceptors;
 
@@ -856,11 +857,16 @@ public abstract class AbstractEndpoint<S> {
         return paused;
     }
 
-
+    /**
+     * 创建执行器队列
+     */
     public void createExecutor() {
         internalExecutor = true;
+        // 任务队列
         TaskQueue taskqueue = new TaskQueue();
+        // 任务线程工厂
         TaskThreadFactory tf = new TaskThreadFactory(getName() + "-exec-", daemon, getThreadPriority());
+        // 最小线程数即 线程池核心线程数。最大线程数，即线程池的最大线程数。
         executor = new ThreadPoolExecutor(getMinSpareThreads(), getMaxThreads(), 60, TimeUnit.SECONDS,taskqueue, tf);
         taskqueue.setParent( (ThreadPoolExecutor) executor);
     }
@@ -1157,15 +1163,21 @@ public abstract class AbstractEndpoint<S> {
 
     public final void start() throws Exception {
         if (bindState == BindState.UNBOUND) {
+            // 执行绑定端点。真正调用具体的子类的方法。NioEndpoint、Nio2Endpoint AprEndpoint
             bind();
             bindState = BindState.BOUND_ON_START;
         }
+        // 端点开始启动。真正调用具体的子类的方法。NioEndpoint、Nio2Endpoint AprEndpoint
         startInternal();
     }
 
+    /**
+     * 启动接收器线程
+     */
     protected final void startAcceptorThreads() {
-        //
+
         int count = getAcceptorThreadCount();
+        // 用于接收新的连接，将它们推给工作线程。
         acceptors = new Acceptor[count];
 
         for (int i = 0; i < count; i++) {
@@ -1174,6 +1186,7 @@ public abstract class AbstractEndpoint<S> {
             acceptors[i].setThreadName(threadName);
             Thread t = new Thread(acceptors[i], threadName);
             t.setPriority(getAcceptorThreadPriority());
+            // 守护线程
             t.setDaemon(getDaemon());
             t.start();
         }

@@ -80,6 +80,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
      * Endpoint that provides low-level network I/O - must be matched to the
      * ProtocolHandler implementation (ProtocolHandler using NIO, requires NIO
      * Endpoint etc.).
+     * 提供底层网络IO的端点。必须匹配相应的协议处理器。如果协议处理器是NIO。那么需要NIO的Socket端点。
      */
     private final AbstractEndpoint<S> endpoint;
 
@@ -100,6 +101,8 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
     public AbstractProtocol(AbstractEndpoint<S> endpoint) {
         this.endpoint = endpoint;
         setSoLinger(Constants.DEFAULT_CONNECTION_LINGER);
+        // 默认的 HTTP协议设置 NO_DELAY = true 。
+        // 通常的协议栈会预留接口来禁用 Nigle 算法，即设置TCP_NODELAY选项。
         setTcpNoDelay(Constants.DEFAULT_TCP_NO_DELAY);
     }
 
@@ -592,13 +595,16 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
         endpoint.start();
 
         // Start async timeout thread
+        // 启动一个异步的超时线程,日志中会看到 -AsyncTimeout 线程
         asyncTimeout = new AsyncTimeout();
         Thread timeoutThread = new Thread(asyncTimeout, getNameInternal() + "-AsyncTimeout");
         int priority = endpoint.getThreadPriority();
         if (priority < Thread.MIN_PRIORITY || priority > Thread.MAX_PRIORITY) {
             priority = Thread.NORM_PRIORITY;
         }
+        // 设置优先级
         timeoutThread.setPriority(priority);
+        // 设置为守护线程
         timeoutThread.setDaemon(true);
         timeoutThread.start();
     }
@@ -670,6 +676,10 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
 
     // ------------------------------------------- Connection handler base class
 
+    /**
+     * 连接控制器
+     * @param <S>
+     */
     protected static class ConnectionHandler<S> implements AbstractEndpoint.Handler<S> {
 
         private final AbstractProtocol<S> proto;
@@ -711,9 +721,9 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
                 // Nothing to do. Socket has been closed.
                 return SocketState.CLOSED;
             }
-
+            // 获取请求
             S socket = wrapper.getSocket();
-
+            // 获取对应的处理器
             Processor processor = connections.get(socket);
             if (getLog().isDebugEnabled()) {
                 getLog().debug(sm.getString("abstractConnectionHandler.connectionsGet",
