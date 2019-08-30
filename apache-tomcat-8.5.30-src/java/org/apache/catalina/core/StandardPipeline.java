@@ -45,8 +45,12 @@ import org.apache.tomcat.util.ExceptionUtils;
  *
  * <b>IMPLEMENTATION WARNING</b> - This implementation assumes that no
  * calls to <code>addValve()</code> or <code>removeValve</code> are allowed
- * while a request is currently being processed.  Otherwise, the mechanism
- * by which per-thread state is maintained will need to be modified.
+ * while a request is currently being processed.
+ * Otherwise, the mechanism by which per-thread state is maintained will need to be modified.
+ *
+ * 一个处理管道的标准实现将会按配置好的顺序，依次调用一系列的阀门。适用于任意一种容器。
+ * 实现警告:该实现假设的前提: 当一个请求正在被处理的时候，不允许调用addValve()或者removeValve()方法。
+ * 否则每个线程状态被维护的机制就需要修改。
  *
  * @author Craig R. McClanahan
  */
@@ -100,6 +104,7 @@ public class StandardPipeline extends LifecycleBase
 
     /**
      * The first valve associated with this Pipeline.
+     * 普通阀门以链式引用存储
      */
     protected Valve first = null;
 
@@ -463,7 +468,10 @@ public class StandardPipeline extends LifecycleBase
         container.fireContainerEvent(Container.REMOVE_VALVE_EVENT, valve);
     }
 
-
+    /**
+     * 有普通阀门就返回，否则返回基础阀门。
+     * @return
+     */
     @Override
     public Valve getFirst() {
         if (first != null) {

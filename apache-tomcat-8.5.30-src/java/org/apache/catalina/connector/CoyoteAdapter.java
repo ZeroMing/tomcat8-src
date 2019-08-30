@@ -350,11 +350,19 @@ public class CoyoteAdapter implements Adapter {
             // 解析并且设置 Catalina 并且配置特定的请求参数。查找 servlet
             postParseSuccess = postParseRequest(req, request, res, response);
             if (postParseSuccess) {
-                //check valves if we support async
+                // check valves if we support async
                 request.setAsyncSupported(
                         connector.getService().getContainer().getPipeline().isAsyncSupported());
                 // Calling the container
-                // 执行各种链式Valve
+                // 执行各种链式Valve。调用容器
+                /**
+                 * getService() -> org.apache.catalina.core.StandardService
+                 * getContainer() -> org.apache.catalina.core.StandardEngine
+                 * getPipeline() -> org.apache.catalina.core.StandardPipeline
+                 * getFirst() -> 获取第一个阀门进行invoke回调
+                 * 通过这种机制来保证调用管道最开头一端的阀的 invoke 方法，最终会执行完该管道相关的所有阀的 invoke 方法，
+                 * 并且最后执行的必定是该管道基础阀的 invoke 方法。
+                 */
                 connector.getService().getContainer().getPipeline().getFirst().invoke(
                         request, response);
             }

@@ -434,6 +434,7 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
     public synchronized MBeanServer getMBeanServer() {
         if (server == null) {
             long t1 = System.currentTimeMillis();
+            // 获取或者创建MBeanServer
             if (MBeanServerFactory.findMBeanServer(null).size() > 0) {
                 server = MBeanServerFactory.findMBeanServer(null).get(0);
                 if (log.isDebugEnabled()) {
@@ -619,9 +620,11 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
                 type=bean.getClass().getName();
             }
 
+            // >>>>> 获取 registerComponent
             ManagedBean managed = findManagedBean(null, bean.getClass(), type);
 
             // The real mbean is created and registered
+            // >>>>> 创建 DynamicMBean
             DynamicMBean mbean = managed.createMBean(bean);
 
             if(  getMBeanServer().isRegistered( oname )) {
@@ -630,7 +633,7 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
                 }
                 getMBeanServer().unregisterMBean( oname );
             }
-
+            // >>>>> 最终: 注册当前bean和名称
             getMBeanServer().registerMBean( mbean, oname);
         } catch( Exception ex) {
             log.error("Error registering " + oname, ex );

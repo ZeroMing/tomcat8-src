@@ -22,9 +22,13 @@ package org.apache.catalina;
  * may implement this interface (as well as the appropriate interface(s) for
  * the functionality they support) in order to provide a consistent mechanism
  * to start and stop the component.
+ * 组件生命周期方法的公共接口。卡特琳娜组件可实现此接口(以及相应的接口所支持的功能)，
+ * 以提供一致的机制启动和停止组件
  * <br>
  * The valid state transitions for components that support {@link Lifecycle}
+ * Lifecycle支持的有效的组件的状态转换
  * are:
+ *
  * <pre>
  *            start()
  *  -----------------------------
@@ -54,6 +58,7 @@ package org.apache.catalina;
  * |                                                               |
  * |                            stop()                             |
  * ----»----------------------------------------------------------------»------------------------------
+ *
  *
  * Any state can transition to FAILED.
  *
@@ -148,6 +153,7 @@ public interface Lifecycle {
 
     /**
      * The LifecycleEvent type for the "periodic" event.
+     * 周期性
      */
     public static final String PERIODIC_EVENT = "periodic";
 
@@ -157,6 +163,7 @@ public interface Lifecycle {
      * components that use a separate component to perform configuration and
      * need to signal when configuration should be performed - usually after
      * {@link #BEFORE_START_EVENT} and before {@link #START_EVENT}.
+     *
      */
     public static final String CONFIGURE_START_EVENT = "configure_start";
 
@@ -166,6 +173,7 @@ public interface Lifecycle {
      * components that use a separate component to perform configuration and
      * need to signal when de-configuration should be performed - usually after
      * {@link #STOP_EVENT} and before {@link #AFTER_STOP_EVENT}.
+     *
      */
     public static final String CONFIGURE_STOP_EVENT = "configure_stop";
 
@@ -175,7 +183,7 @@ public interface Lifecycle {
 
     /**
      * Add a LifecycleEvent listener to this component.
-     *
+     * 添加生命周期监听器到当前组件
      * @param listener The listener to add
      */
     public void addLifecycleListener(LifecycleListener listener);

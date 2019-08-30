@@ -87,6 +87,7 @@ public class StandardWrapper extends ContainerBase
     public StandardWrapper() {
 
         super();
+        // 标准包装器的阀门
         swValve=new StandardWrapperValve();
         pipeline.setBasic(swValve);
         broadcaster = new NotificationBroadcasterSupport();

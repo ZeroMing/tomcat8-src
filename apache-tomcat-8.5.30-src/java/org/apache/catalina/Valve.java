@@ -33,6 +33,7 @@ import org.apache.catalina.connector.Response;
  * because a valve is what you use in a real world pipeline to control and/or
  * modify flows through it.
  *
+ * 类似过滤器，拦截修改流经阀门的流。
  * @author Craig R. McClanahan
  * @author Gunnar Rjnning
  * @author Peter Donald
@@ -69,25 +70,29 @@ public interface Valve {
 
     /**
      * <p>Perform request processing as required by this Valve.</p>
-     *
+     * 按照阀门的要求处理请求
      * <p>An individual Valve <b>MAY</b> perform the following actions, in
-     * the specified order:</p>
+     * the specified order: 允许的操作</p>
      * <ul>
      * <li>Examine and/or modify the properties of the specified Request and
      *     Response.
+     *     检查或者修改一个特殊请求或者特殊响应的属性值
      * <li>Examine the properties of the specified Request, completely generate
      *     the corresponding Response, and return control to the caller.
+     *     检查特殊请求的配置，然后生成一致的响应，将控制权返还给调用者。
      * <li>Examine the properties of the specified Request and Response, wrap
      *     either or both of these objects to supplement their functionality,
      *     and pass them on.
+     *     检查特殊请求的配置，然后包装他们去增加功能使他们增强。
      * <li>If the corresponding Response was not generated (and control was not
      *     returned, call the next Valve in the pipeline (if there is one) by
      *     executing <code>getNext().invoke()</code>.
+     *     通过调用 getNext().invoke()调用下一个阀门
      * <li>Examine, but not modify, the properties of the resulting Response
      *     (which was created by a subsequently invoked Valve or Container).
      * </ul>
      *
-     * <p>A Valve <b>MUST NOT</b> do any of the following things:</p>
+     * <p>A Valve <b>MUST NOT</b> do any of the following things:禁止的操作</p>
      * <ul>
      * <li>Change request properties that have already been used to direct
      *     the flow of processing control for this request (for instance,

@@ -49,6 +49,7 @@ public abstract class LifecycleMBeanBase extends LifecycleBase
      * Sub-classes wishing to perform additional initialization should override
      * this method, ensuring that super.initInternal() is the first call in the
      * overriding method.
+     * 子类实现
      */
     @Override
     protected void initInternal() throws LifecycleException {
@@ -56,8 +57,9 @@ public abstract class LifecycleMBeanBase extends LifecycleBase
         // If oname is not null then registration has already happened via
         // preRegister().
         if (oname == null) {
+            // 注册获取MBeanServer
             mserver = Registry.getRegistry(null, null).getMBeanServer();
-
+            // 注册Bean获取名称
             oname = register(this, getObjectNameKeyProperties());
         }
     }
@@ -157,7 +159,9 @@ public abstract class LifecycleMBeanBase extends LifecycleBase
 
         try {
             on = new ObjectName(name.toString());
-
+            /**
+             * registerComponent 注册组件
+             */
             Registry.getRegistry(null, null).registerComponent(obj, on, null);
         } catch (MalformedObjectNameException e) {
             log.warn(sm.getString("lifecycleMBeanBase.registerFail", obj, name),

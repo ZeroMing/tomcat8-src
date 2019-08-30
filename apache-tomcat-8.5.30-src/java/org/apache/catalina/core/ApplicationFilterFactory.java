@@ -42,6 +42,7 @@ public final class ApplicationFilterFactory {
     /**
      * Construct a FilterChain implementation that will wrap the execution of
      * the specified servlet instance.
+     * 构造一个包装特定的servlet实例的执行的过滤器链
      *
      * @param request The servlet request we are processing
      * @param wrapper The wrapper managing the servlet instance

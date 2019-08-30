@@ -48,7 +48,7 @@ import org.apache.tomcat.util.res.StringManager;
 
 /**
  * Implementation of a Coyote connector.
- *
+ * 郊狼连接器的实现
  * @author Craig R. McClanahan
  * @author Remy Maucherat
  */
@@ -973,7 +973,7 @@ public class Connector extends LifecycleMBeanBase  {
 
     @Override
     protected void initInternal() throws LifecycleException {
-
+        // 首先调用父类的initInternal方法
         super.initInternal();
 
         // Initialize adapter
@@ -1004,6 +1004,7 @@ public class Connector extends LifecycleMBeanBase  {
         }
 
         try {
+            // 协议处理器的初始化
             protocolHandler.init();
         } catch (Exception e) {
             throw new LifecycleException(
@@ -1067,11 +1068,12 @@ public class Connector extends LifecycleMBeanBase  {
             throw new LifecycleException(
                     sm.getString("coyoteConnector.protocolHandlerDestroyFailed"), e);
         }
-
+        // 获取父容器
         if (getService() != null) {
+            // 从父容器的子容器中移除当前组件
             getService().removeConnector(this);
         }
-
+        // 最后调用父类的destroyInternal
         super.destroyInternal();
     }
 

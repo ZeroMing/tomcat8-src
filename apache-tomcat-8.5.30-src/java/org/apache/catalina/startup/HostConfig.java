@@ -152,6 +152,7 @@ public class HostConfig implements LifecycleListener {
 
     /**
      * The <code>Digester</code> instance used to parse context descriptors.
+     * 解析上下文描述符的Digester实例
      */
     protected Digester digester = createDigester(contextClass);
     private final Object digesterLock = new Object();
@@ -820,7 +821,8 @@ public class HostConfig implements LifecycleListener {
     }
 
     /**
-     * Deploy packed WAR.
+     * Deploy packed WAR包
+     * >>>>> 发布WAR包
      * @param cn The context name
      * @param war The WAR file
      */

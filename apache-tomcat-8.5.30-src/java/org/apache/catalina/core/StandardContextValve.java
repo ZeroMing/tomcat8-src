@@ -63,11 +63,13 @@ final class StandardContextValve extends ValveBase {
         throws IOException, ServletException {
 
         // Disallow any direct access to resources under WEB-INF or META-INF
+        // 不允许用户直接访问WEB-INF or META-INF下的任何资源
         MessageBytes requestPathMB = request.getRequestPathMB();
         if ((requestPathMB.startsWithIgnoreCase("/META-INF/", 0))
                 || (requestPathMB.equalsIgnoreCase("/META-INF"))
                 || (requestPathMB.startsWithIgnoreCase("/WEB-INF/", 0))
                 || (requestPathMB.equalsIgnoreCase("/WEB-INF"))) {
+            // 返回 404 资源找不到
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
@@ -79,7 +81,7 @@ final class StandardContextValve extends ValveBase {
             return;
         }
 
-        // Acknowledge the request
+        // Acknowledge the request 确认请求
         try {
             response.sendAcknowledgement();
         } catch (IOException ioe) {
@@ -93,6 +95,7 @@ final class StandardContextValve extends ValveBase {
         if (request.isAsyncSupported()) {
             request.setAsyncSupported(wrapper.getPipeline().isAsyncSupported());
         }
+        // >>>>> 包装器调用阀门
         wrapper.getPipeline().getFirst().invoke(request, response);
     }
 }
