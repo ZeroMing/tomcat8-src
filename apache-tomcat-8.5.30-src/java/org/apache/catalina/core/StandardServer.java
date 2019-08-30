@@ -409,6 +409,8 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
     }
 
     /**
+     * 等待直到一个正确的关闭命令被接收，然后返回。
+     * 使得主线程一直处于活跃状态，等待接收HTTP连接的线程池是守护线程。
      * Wait until a proper shutdown command is received, then return.
      * This keeps the main thread alive - the thread pool listening for http
      * connections is daemon threads.

@@ -42,6 +42,10 @@ import org.apache.tomcat.util.res.StringManager;
  * Mapper, which implements the servlet API mapping rules (which are derived
  * from the HTTP rules).
  *
+ * Tomcat 容器启动过程中会将在用的 Host、Context、Wrapper 组件同时维护到与一个
+ * Connector 相关的 Mapper 对象里，这样才会在容器接收到一次请求的时候可以根据请求的URL
+ * 等信息匹配到具体的 host、context、wrapper 。
+ *
  * @author Remy Maucherat
  */
 public final class Mapper {
@@ -695,6 +699,7 @@ public final class Mapper {
         }
         host.toChars();
         uri.toChars();
+        // 内部映射
         internalMap(host.getCharChunk(), uri.getCharChunk(), version,
                 mappingData);
     }

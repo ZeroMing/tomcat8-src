@@ -31,8 +31,8 @@ public interface LifecycleListener {
 
 
     /**
+     * 确认指定事件的发生
      * Acknowledge the occurrence of the specified event.
-     *
      * @param event LifecycleEvent that has occurred
      */
     public void lifecycleEvent(LifecycleEvent event);

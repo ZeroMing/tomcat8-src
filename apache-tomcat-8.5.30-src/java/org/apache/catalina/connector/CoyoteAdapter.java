@@ -297,6 +297,8 @@ public class CoyoteAdapter implements Adapter {
 
     /**
      * 处理Tomcat请求和返回
+     * 入参org.apache.coyote.Request对象被转成了org.apache.catalina.connector.Request对象，
+     * 后一类型的对象才是在 Tomcat 容器流转时真正传递的对象
      * @param req The request object
      * @param res The response object
      *
@@ -345,7 +347,7 @@ public class CoyoteAdapter implements Adapter {
 
             // Parse and set Catalina and configuration specific
             // request parameters
-            // 解析并且设置 Catalina 并且配置特定的请求参数。查找servlet
+            // 解析并且设置 Catalina 并且配置特定的请求参数。查找 servlet
             postParseSuccess = postParseRequest(req, request, res, response);
             if (postParseSuccess) {
                 //check valves if we support async
@@ -692,6 +694,7 @@ public class CoyoteAdapter implements Adapter {
 
         while (mapRequired) {
             // This will map the the latest version by default
+            // 设置映射
             connector.getService().getMapper().map(serverName, decodedURI,
                     version, request.getMappingData());
 
@@ -811,6 +814,7 @@ public class CoyoteAdapter implements Adapter {
         // Filter trace method
         if (!connector.getAllowTrace()
                 && req.method().equalsIgnoreCase("TRACE")) {
+            // 获取包装器
             Wrapper wrapper = request.getWrapper();
             String header = null;
             if (wrapper != null) {
