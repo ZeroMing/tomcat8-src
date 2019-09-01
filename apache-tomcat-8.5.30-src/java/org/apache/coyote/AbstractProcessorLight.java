@@ -31,6 +31,7 @@ import org.apache.tomcat.util.net.SocketWrapperBase;
  * This is a light-weight abstract processor implementation that is intended as
  * a basis for all Processor implementations from the light-weight upgrade
  * processors to the HTTP/AJP processors.
+ * 作为HTTP/AJP processors的轻量级的升级版，同时作为所有Processor实现的基础
  */
 public abstract class AbstractProcessorLight implements Processor {
 
@@ -58,13 +59,14 @@ public abstract class AbstractProcessorLight implements Processor {
                     // release() which will recycle the processor (and input
                     // buffer) deleting any pipe-lined data. To avoid this,
                     // process it now.
-                    // 处理请求
+                    // >>>>> AbstractProcessorLight 处理请求
                     state = service(socketWrapper);
                 }
             } else if (status == SocketEvent.OPEN_WRITE) {
                 // Extra write event likely after async, ignore
                 state = SocketState.LONG;
             } else if (status == SocketEvent.OPEN_READ){
+                // >>>>> 处理请求
                 state = service(socketWrapper);
             } else {
                 // Default to closing the socket if the SocketEvent passed in

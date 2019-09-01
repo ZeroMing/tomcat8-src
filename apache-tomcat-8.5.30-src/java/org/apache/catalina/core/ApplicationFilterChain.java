@@ -70,6 +70,7 @@ public final class ApplicationFilterChain implements FilterChain {
 
     /**
      * Filters.
+     * 过滤器
      */
     private ApplicationFilterConfig[] filters = new ApplicationFilterConfig[0];
 

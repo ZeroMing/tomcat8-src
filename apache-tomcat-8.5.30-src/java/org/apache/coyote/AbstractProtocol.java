@@ -570,7 +570,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
                 Registry.getRegistry(null, null).registerComponent(this, oname, null);
             }
         }
-
+        // 注册到JMX
         if (this.domain != null) {
             rgOname = new ObjectName(domain + ":type=GlobalRequestProcessor,name=" + getName());
             Registry.getRegistry(null, null).registerComponent(
@@ -580,7 +580,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
         String endpointName = getName();
         endpoint.setName(endpointName.substring(1, endpointName.length()-1));
         endpoint.setDomain(domain);
-
+        // 服务端点初始化
         endpoint.init();
     }
 
