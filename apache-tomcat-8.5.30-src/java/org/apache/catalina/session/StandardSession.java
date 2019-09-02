@@ -90,6 +90,7 @@ public class StandardSession implements HttpSession, Session, Serializable {
     protected static final boolean LAST_ACCESS_AT_START;
 
     static {
+        // 是否遵循严格的Servlet规范约束
         STRICT_SERVLET_COMPLIANCE = Globals.STRICT_SERVLET_COMPLIANCE;
 
         String activityCheck = System.getProperty(

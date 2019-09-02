@@ -721,7 +721,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
                 // Nothing to do. Socket has been closed.
                 return SocketState.CLOSED;
             }
-            // 获取请求
+            // 获取请求 NioChannel
             S socket = wrapper.getSocket();
             // 获取对应的处理器
             Processor processor = connections.get(socket);

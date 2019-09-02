@@ -50,6 +50,7 @@ import org.apache.tomcat.util.res.StringManager;
  *
  * Similar to the StandardSession except that this session will keep
  * track of deltas during a request.
+ * 与StandardSession类似。将会留存一个请求中的执行轨迹。
  */
 public class DeltaSession extends StandardSession implements Externalizable,ClusterSession,ReplicatedMapEntry {
 
