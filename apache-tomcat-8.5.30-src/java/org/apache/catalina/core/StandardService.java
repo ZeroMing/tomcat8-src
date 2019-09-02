@@ -138,6 +138,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
                 }
             }
             // Restart MapperListener to pick up new engine.
+            // 先停止监听器
             try {
                 mapperListener.stop();
             } catch (LifecycleException e) {

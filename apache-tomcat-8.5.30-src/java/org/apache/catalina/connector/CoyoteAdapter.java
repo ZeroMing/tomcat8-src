@@ -702,7 +702,7 @@ public class CoyoteAdapter implements Adapter {
 
         while (mapRequired) {
             // This will map the the latest version by default
-            // 设置映射
+            // 获取映射数据
             connector.getService().getMapper().map(serverName, decodedURI,
                     version, request.getMappingData());
 

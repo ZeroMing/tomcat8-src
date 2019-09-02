@@ -977,23 +977,27 @@ public class Connector extends LifecycleMBeanBase  {
         super.initInternal();
 
         // Initialize adapter
+        // 初始化协议适配器
         adapter = new CoyoteAdapter(this);
 
-        // 协议处理的适配器
+        // 为协议处理器设置适配器
         protocolHandler.setAdapter(adapter);
 
         // Make sure parseBodyMethodsSet has a default
+        // 默认解析请求体的方法是POST
         if (null == parseBodyMethodsSet) {
             setParseBodyMethods(getParseBodyMethods());
         }
 
-        // ARP
+        // ARP 开启 但是 ARP 不可用
         if (protocolHandler.isAprRequired() && !AprLifecycleListener.isAprAvailable()) {
             throw new LifecycleException(sm.getString("coyoteConnector.protocolHandlerNoApr",
                     getProtocolHandlerClassName()));
         }
+        //
         if (AprLifecycleListener.isAprAvailable() && AprLifecycleListener.getUseOpenSSL() &&
                 protocolHandler instanceof AbstractHttp11JsseProtocol) {
+
             AbstractHttp11JsseProtocol<?> jsseProtocolHandler =
                     (AbstractHttp11JsseProtocol<?>) protocolHandler;
             if (jsseProtocolHandler.isSSLEnabled() &&

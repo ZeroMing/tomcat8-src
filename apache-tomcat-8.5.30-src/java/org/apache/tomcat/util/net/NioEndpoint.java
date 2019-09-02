@@ -453,7 +453,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
      *
      *
      */
-    protected class Acceptor extends AbstractEndpoint.Acceptor {
+    protected class Acceptor extends AbstractEndpoint.Acceptor  {
 
         @Override
         public void run() {
@@ -480,7 +480,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
 
                 try {
                     //if we have reached max connections, wait
-                    // 达到最大连接数。await等待释放connection，在Endpoint的startInterval方法中设置了最大连接数。AQS实现。
+                    // 达到最大连接数。await等待释放connection，在 Endpoint 的startInterval方法中设置了最大连接数。AQS实现。
                     countUpOrAwaitConnection();
 
                     // socketChannel
@@ -1514,9 +1514,10 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
 
     /**
      *
-     * Worker 线程
+     * >>>>> Worker工作线程
      *
-     * This class is the equivalent of the Worker, but will simply use in an external Executor thread pool.
+     * This class is the equivalent of the Worker,
+     * but will simply use in an external Executor thread pool.
      *
      */
     protected class SocketProcessor extends SocketProcessorBase<NioChannel> {
@@ -1538,6 +1539,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
 
                 try {
                     if (key != null) {
+                        // TCP握手完毕
                         if (socket.isHandshakeComplete()) {
                             // No TLS handshaking required. Let the handler
                             // process this socket / event combination.
@@ -1548,6 +1550,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                             // if the handshake failed.
                             handshake = -1;
                         } else {
+                            // 完成TCP握手
                             handshake = socket.handshake(key.isReadable(), key.isWritable());
                             // The handshake process reads/writes from/to the
                             // socket. status may therefore be OPEN_WRITE once
@@ -1570,6 +1573,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                     SocketState state = SocketState.OPEN;
                     // Process the request from this socket
                     if (event == null) {
+                        // >>>>> 获取连接控制器，然后调用连接控制器的 process 处理连接
                         state = getHandler().process(socketWrapper, SocketEvent.OPEN_READ);
                     } else {
                         state = getHandler().process(socketWrapper, event);
