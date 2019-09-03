@@ -32,6 +32,7 @@ import org.apache.juli.logging.Log;
  * optionally support a pipeline of Valves that process the request in an
  * order configured at runtime, by implementing the <b>Pipeline</b> interface
  * as well.
+ * 容器支持附带有一系列阀门按序执行的管道。通过实现Pipeline接口
  * <p>
  * Containers will exist at several conceptual levels within Catalina.  The
  * following examples represent common cases:
@@ -39,13 +40,17 @@ import org.apache.juli.logging.Log;
  * <li><b>Engine</b> - Representation of the entire Catalina servlet engine,
  *     most likely containing one or more subcontainers that are either Host
  *     or Context implementations, or other custom groups.
+ *     包含一个或多个 Host 或者 上下文。或者自定义组。
  * <li><b>Host</b> - Representation of a virtual host containing a number
  *     of Contexts.
+ *     代表一个虚拟主机，包含了一系列的上下文。
  * <li><b>Context</b> - Representation of a single ServletContext, which will
  *     typically contain one or more Wrappers for the supported servlets.
+ *     上下文，单个ServletContext包装，包含一个或多个Wrapper
  * <li><b>Wrapper</b> - Representation of an individual servlet definition
  *     (which may support multiple servlet instances if the servlet itself
  *     implements SingleThreadModel).
+ *     单个Servlet的包装
  * </ul>
  * A given deployment of Catalina need not include Containers at all of the
  * levels described above.  For example, an administration application
@@ -62,15 +67,20 @@ import org.apache.juli.logging.Log;
  * <ul>
  * <li><b>Loader</b> - Class loader to use for integrating new Java classes
  *     for this Container into the JVM in which Catalina is running.
+ *      类加载器
  * <li><b>Logger</b> - Implementation of the <code>log()</code> method
  *     signatures of the <code>ServletContext</code> interface.
+ *      日志器
  * <li><b>Manager</b> - Manager for the pool of Sessions associated with
  *     this Container.
+ *      管理器，负责管理session池
  * <li><b>Realm</b> - Read-only interface to a security domain, for
  *     authenticating user identities and their corresponding roles.
+ *      权限验证
  * <li><b>Resources</b> - JNDI directory context enabling access to static
  *     resources, enabling custom linkages to existing server components when
  *     Catalina is embedded in a larger server.
+ *      Java命名和目录接口
  * </ul>
  *
  * @author Craig R. McClanahan
@@ -304,6 +314,7 @@ public interface Container extends Lifecycle {
      * Execute a periodic task, such as reloading, etc. This method will be
      * invoked inside the classloading context of this container. Unexpected
      * throwables will be caught and logged.
+     * 执行一个周期性的任务。一般由具体的子容器去实现。
      */
     public void backgroundProcess();
 

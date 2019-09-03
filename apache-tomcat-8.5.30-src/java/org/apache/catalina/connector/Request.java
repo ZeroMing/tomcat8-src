@@ -341,6 +341,7 @@ public class Request implements org.apache.catalina.servlet4preview.http.HttpSer
 
     /**
      * The currently active session for this request.
+     * 当前请求活跃的session对象
      */
     protected Session session = null;
 
@@ -2432,6 +2433,7 @@ public class Request implements org.apache.catalina.servlet4preview.http.HttpSer
      */
     @Override
     public HttpSession getSession(boolean create) {
+        // 获取Session
         Session session = doGetSession(create);
         if (session == null) {
             return null;
@@ -2955,6 +2957,7 @@ public class Request implements org.apache.catalina.servlet4preview.http.HttpSer
     protected Session doGetSession(boolean create) {
 
         // There cannot be a session if no context has been assigned yet
+        // 上下文
         Context context = getContext();
         if (context == null) {
             return (null);
@@ -2969,6 +2972,7 @@ public class Request implements org.apache.catalina.servlet4preview.http.HttpSer
         }
 
         // Return the requested session if it exists and is valid
+        // 获取管理器
         Manager manager = context.getManager();
         if (manager == null) {
             return (null);      // Sessions are not supported
@@ -3003,6 +3007,7 @@ public class Request implements org.apache.catalina.servlet4preview.http.HttpSer
 
         // Re-use session IDs provided by the client in very limited
         // circumstances.
+        // 重复使用相同的session ID的情况非常少
         String sessionId = getRequestedSessionId();
         if (requestedSessionSSL) {
             // If the session ID has been obtained from the SSL handshake then
@@ -3042,24 +3047,27 @@ public class Request implements org.apache.catalina.servlet4preview.http.HttpSer
         } else {
             sessionId = null;
         }
+        // 管理器创建新的 Session
         session = manager.createSession(sessionId);
 
         // Creating a new session cookie based on that session
+        // 基于该会话创建一个新的会话cookie
         if (session != null
                 && context.getServletContext()
                         .getEffectiveSessionTrackingModes()
                         .contains(SessionTrackingMode.COOKIE)) {
+            //  创建会话 Cookie
             Cookie cookie =
                 ApplicationSessionCookieConfig.createSessionCookie(
                         context, session.getIdInternal(), isSecure());
-
+            // 将新的 会话 Cookie返回给 Response
             response.addSessionCookieInternal(cookie);
         }
 
         if (session == null) {
             return null;
         }
-
+        //
         session.access();
         return session;
     }

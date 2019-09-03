@@ -165,6 +165,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
 
     /**
      * The processor delay for this component.
+     * 组件的延期处理器
      */
     protected int backgroundProcessorDelay = -1;
 
@@ -259,6 +260,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
 
     /**
      * The background thread completion semaphore.
+     * 后台线程是否创建完成信号量
      */
     private volatile boolean threadDone = false;
 
@@ -958,6 +960,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
         setState(LifecycleState.STARTING);
 
         // Start our thread
+        // 启动用户线程
         threadStart();
 
     }
@@ -1293,6 +1296,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
         threadDone = false;
         String threadName = "ContainerBackgroundProcessor[" + toString() + "]";
         thread = new Thread(new ContainerBackgroundProcessor(), threadName);
+        // 守护线程
         thread.setDaemon(true);
         thread.start();
 
@@ -1342,6 +1346,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
     /**
      * Private thread class to invoke the backgroundProcess method
      * of this container and its children after a fixed delay.
+     * 处理延期
      */
     protected class ContainerBackgroundProcessor implements Runnable {
 
@@ -1359,6 +1364,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
                         // Ignore
                     }
                     if (!threadDone) {
+                        // 处理子容器
                         processChildren(ContainerBase.this);
                     }
                 }
@@ -1377,6 +1383,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
 
             try {
                 if (container instanceof Context) {
+                    // 获取上下文的ClassLoader
                     Loader loader = ((Context) container).getLoader();
                     // Loader will be null for FailedContext instances
                     if (loader == null) {
@@ -1387,10 +1394,13 @@ public abstract class ContainerBase extends LifecycleMBeanBase
                     // is performed under the web app's class loader
                     originalClassLoader = ((Context) container).bind(false, null);
                 }
+                // 执行后台程序。具体由子容器去实现具体的业务
                 container.backgroundProcess();
+                // 查找所有的子容器
                 Container[] children = container.findChildren();
                 for (int i = 0; i < children.length; i++) {
                     if (children[i].getBackgroundProcessorDelay() <= 0) {
+                        // 递归处理
                         processChildren(children[i]);
                     }
                 }
@@ -1400,7 +1410,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
             } finally {
                 if (container instanceof Context) {
                     ((Context) container).unbind(false, originalClassLoader);
-               }
+                }
             }
         }
     }

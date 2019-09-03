@@ -975,7 +975,7 @@ public class Response implements HttpServletResponse {
     /**
      * Special method for adding a session cookie as we should be overriding
      * any previous.
-     *
+     * 将 Cookie 写回到 Response.
      * @param cookie The new session cookie to add the response
      */
     public void addSessionCookieInternal(final Cookie cookie) {
@@ -984,6 +984,7 @@ public class Response implements HttpServletResponse {
         }
 
         String name = cookie.getName();
+        // >>>>> 返回Cookie 证据 Set-Cookie=
         final String headername = "Set-Cookie";
         final String startsWith = name + "=";
         String header = generateCookieString(cookie);
