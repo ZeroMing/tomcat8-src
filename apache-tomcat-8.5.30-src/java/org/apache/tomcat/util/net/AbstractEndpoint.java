@@ -416,7 +416,7 @@ public abstract class AbstractEndpoint<S> {
     }
     public int getAcceptorThreadPriority() { return acceptorThreadPriority; }
 
-
+    // 默认最大连接数10000
     private int maxConnections = 10000;
     public void setMaxConnections(int maxCon) {
         this.maxConnections = maxCon;
@@ -1058,9 +1058,9 @@ public abstract class AbstractEndpoint<S> {
             // 开启线程池处理
             Executor executor = getExecutor();
             if (dispatch && executor != null) {
-                //处理 SocketProcessorBase
+                // 处理 SocketProcessorBase
                 // 工作线程
-                //SocketProcessor实现了Runneble接口，可以直接传入execute方法进行处理
+                // SocketProcessor实现了Runneble接口，可以直接传入execute方法进行处理
                 executor.execute(sc);
             } else {
                 sc.run();
@@ -1183,6 +1183,7 @@ public abstract class AbstractEndpoint<S> {
 
         for (int i = 0; i < count; i++) {
             acceptors[i] = createAcceptor();
+            // 接受者线程
             String threadName = getName() + "-Acceptor-" + i;
             acceptors[i].setThreadName(threadName);
             Thread t = new Thread(acceptors[i], threadName);

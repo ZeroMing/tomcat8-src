@@ -100,6 +100,7 @@ public abstract class LifecycleBase implements Lifecycle {
 
     /**
      * 初始化生命周期
+     * 模板方法模式
      * @throws LifecycleException
      */
     @Override

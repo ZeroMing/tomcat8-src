@@ -128,8 +128,9 @@ public class CoyoteAdapter implements Adapter {
     @Override
     public boolean asyncDispatch(org.apache.coyote.Request req, org.apache.coyote.Response res,
             SocketEvent status) throws Exception {
-
+        // 请求
         Request request = (Request) req.getNote(ADAPTER_NOTES);
+        // 返回
         Response response = (Response) res.getNote(ADAPTER_NOTES);
 
         if (request == null) {
@@ -227,11 +228,13 @@ public class CoyoteAdapter implements Adapter {
             // if the application doesn't define one)?
             if (!request.isAsyncDispatching() && request.isAsync() &&
                     response.isErrorReportRequired()) {
+                //
                 connector.getService().getContainer().getPipeline().getFirst().invoke(
                         request, response);
             }
 
             if (request.isAsyncDispatching()) {
+                //
                 connector.getService().getContainer().getPipeline().getFirst().invoke(
                         request, response);
                 Throwable t = (Throwable) request.getAttribute(RequestDispatcher.ERROR_EXCEPTION);

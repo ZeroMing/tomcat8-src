@@ -180,9 +180,10 @@ public class Nio2Endpoint extends AbstractJsseEndpoint<Nio2Channel> {
             allClosed = false;
             running = true;
             paused = false;
-
+            // 处理缓存
             processorCache = new SynchronizedStack<>(SynchronizedStack.DEFAULT_SIZE,
                     socketProperties.getProcessorCache());
+            // NIO通道栈
             nioChannels = new SynchronizedStack<>(SynchronizedStack.DEFAULT_SIZE,
                     socketProperties.getBufferPool());
 
@@ -192,6 +193,7 @@ public class Nio2Endpoint extends AbstractJsseEndpoint<Nio2Channel> {
             }
 
             initializeConnectionLatch();
+            // 开始启动接收器线程
             startAcceptorThreads();
         }
     }
@@ -431,8 +433,9 @@ public class Nio2Endpoint extends AbstractJsseEndpoint<Nio2Channel> {
 
                 try {
                     //if we have reached max connections, wait
+                    // 达到最大连接数限制，等待
                     countUpOrAwaitConnection();
-
+                    // 异步套接字通道
                     AsynchronousSocketChannel socket = null;
                     try {
                         // Accept the next incoming connection from the server

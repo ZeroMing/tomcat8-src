@@ -877,13 +877,13 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                             // 非阻塞的 select
                             keyCount = selector.selectNow();
                         } else {
-                            //阻塞selector，直到有准备就绪的socket
+                            // 阻塞selector，直到有准备就绪的socket
                             keyCount = selector.select(selectorTimeout);
                         }
                         wakeupCounter.set(0);
                     }
                     if (close) {
-                        //该方法遍历了eventqueue中的所有PollorEvent，然后依次调用PollorEvent的run，将socket注册到selector中。
+                        // 该方法遍历了eventqueue中的所有PollorEvent，然后依次调用PollorEvent的run，将socket注册到selector中。
                         events();
                         timeout(0, false);
                         try {
@@ -915,7 +915,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                         iterator.remove();
                     } else {
                         iterator.remove();
-                        // 处理已连接的套接字。转换为
+                        // 处理已连接的套接字
                         processKey(sk, attachment);
                     }
                 }//while
@@ -1514,7 +1514,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
 
     /**
      *
-     * >>>>> Worker工作线程
+     * ☆☆☆☆☆ 真正的 Worker工作线程
      *
      * This class is the equivalent of the Worker,
      * but will simply use in an external Executor thread pool.

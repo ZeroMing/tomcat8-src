@@ -48,6 +48,7 @@ public abstract class AbstractProcessorLight implements Processor {
             if (dispatches != null) {
                 // 请求分发器
                 DispatchType nextDispatch = dispatches.next();
+                // 分发
                 state = dispatch(nextDispatch.getSocketStatus());
             } else if (status == SocketEvent.DISCONNECT) {
                 // Do nothing here, just wait for it to get recycled
@@ -66,7 +67,7 @@ public abstract class AbstractProcessorLight implements Processor {
                 // Extra write event likely after async, ignore
                 state = SocketState.LONG;
             } else if (status == SocketEvent.OPEN_READ){
-                // >>>>> 处理请求
+                // ☆☆☆☆☆ 处理请求
                 state = service(socketWrapper);
             } else {
                 // Default to closing the socket if the SocketEvent passed in
