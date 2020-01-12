@@ -529,7 +529,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
     protected void initInternal() throws LifecycleException {
 
         super.initInternal();
-
+        // 初始化引擎
         if (engine != null) {
             engine.init();
         }
