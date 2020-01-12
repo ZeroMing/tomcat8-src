@@ -5136,6 +5136,7 @@ public class StandardContext extends ContainerBase
                 }
 
                 // Notify our interested LifecycleListeners
+                // 触发事件
                 fireLifecycleEvent(Lifecycle.CONFIGURE_START_EVENT, null);
 
                 // Start our child containers, if not already started
@@ -5591,6 +5592,7 @@ public class StandardContext extends ContainerBase
         if (!getState().isAvailable())
             return;
 
+        // 热加载 class ,jsp
         Loader loader = getLoader();
         if (loader != null) {
             try {
@@ -5600,9 +5602,11 @@ public class StandardContext extends ContainerBase
                         "standardContext.backgroundProcess.loader", loader), e);
             }
         }
+        // 清理过期Session
         Manager manager = getManager();
         if (manager != null) {
             try {
+                // 管理器
                 manager.backgroundProcess();
             } catch (Exception e) {
                 log.warn(sm.getString(
@@ -5610,6 +5614,7 @@ public class StandardContext extends ContainerBase
                         e);
             }
         }
+        //  清理Web资源文件的缓存
         WebResourceRoot resources = getResources();
         if (resources != null) {
             try {
@@ -5620,6 +5625,8 @@ public class StandardContext extends ContainerBase
                         resources), e);
             }
         }
+
+        // 清理对象或class信息缓存
         InstanceManager instanceManager = getInstanceManager();
         if (instanceManager instanceof DefaultInstanceManager) {
             try {

@@ -32,7 +32,7 @@ public class StandardSessionFacade implements HttpSession {
 
     /**
      * Construct a new session facade.
-     *
+     * 构建一个新的Session门面
      * @param session The session instance to wrap
      */
     public StandardSessionFacade(HttpSession session) {

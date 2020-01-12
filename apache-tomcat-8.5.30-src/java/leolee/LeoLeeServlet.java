@@ -16,7 +16,6 @@ import java.util.UUID;
  * @author: LeoLee
  * @date: 2019/8/30 09:29
  */
-@WebServlet(name = "leolee",urlPatterns = "/leolee")
 public class LeoLeeServlet extends HttpServlet {
 
 

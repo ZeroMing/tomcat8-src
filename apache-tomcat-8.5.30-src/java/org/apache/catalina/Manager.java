@@ -35,6 +35,13 @@ import java.io.IOException;
  *     <code>start()</code> on the same <code>Manager</code> instance.
  * </ul>
  *
+ *
+ * 管理关联到某个特定上下文的会话池的管理者。
+ * 实现约束:
+ * 1. 必须实现 Lifecycle接口。可以感知到重启。
+ * 2. 允许在调用start()之后调用Stop。
+ *
+ *
  * @author Craig R. McClanahan
  */
 public interface Manager {

@@ -56,7 +56,8 @@ import org.apache.tomcat.util.res.StringManager;
  * Minimal implementation of the <b>Manager</b> interface that supports
  * no session persistence or distributable capabilities.  This class may
  * be subclassed to create more sophisticated Manager implementations.
- *
+ * 非持久化或者非分布式能力。
+ * 给子类去实现更复杂的Manager功能。
  * @author Craig R. McClanahan
  */
 public abstract class ManagerBase extends LifecycleMBeanBase implements Manager {
@@ -134,6 +135,7 @@ public abstract class ManagerBase extends LifecycleMBeanBase implements Manager 
     /**
      * The set of currently active Sessions for this Manager, keyed by
      * session identifier.
+     * Map 保存活跃的session。键为session的唯一标识ID。
      */
     protected Map<String, Session> sessions = new ConcurrentHashMap<>();
 
@@ -532,21 +534,25 @@ public abstract class ManagerBase extends LifecycleMBeanBase implements Manager 
     public void backgroundProcess() {
         count = (count + 1) % processExpiresFrequency;
         if (count == 0)
+            // 处理过期数据
             processExpires();
     }
 
     /**
      * Invalidate all sessions that have expired.
+     * 失效所有的过期Session
      */
     public void processExpires() {
 
         long timeNow = System.currentTimeMillis();
+        // 获取所有的 Session
         Session sessions[] = findSessions();
         int expireHere = 0 ;
 
         if(log.isDebugEnabled())
             log.debug("Start expire sessions " + getName() + " at " + timeNow + " sessioncount " + sessions.length);
         for (int i = 0; i < sessions.length; i++) {
+            // 判断 Session 无效
             if (sessions[i]!=null && !sessions[i].isValid()) {
                 expireHere++;
             }
@@ -649,6 +655,7 @@ public abstract class ManagerBase extends LifecycleMBeanBase implements Manager 
         }
 
         // Recycle or create a Session instance
+        // 回收或者创建一个 Session 实例
         Session session = createEmptySession();
 
         // Initialize the properties of the new session and return it
@@ -658,6 +665,7 @@ public abstract class ManagerBase extends LifecycleMBeanBase implements Manager 
         session.setMaxInactiveInterval(getContext().getSessionTimeout() * 60);
         String id = sessionId;
         if (id == null) {
+            // 生成 SessionId
             id = generateSessionId();
         }
         session.setId(id);
@@ -666,6 +674,7 @@ public abstract class ManagerBase extends LifecycleMBeanBase implements Manager 
         SessionTiming timing = new SessionTiming(session.getCreationTime(), 0);
         synchronized (sessionCreationTiming) {
             sessionCreationTiming.add(timing);
+            // 移除队首
             sessionCreationTiming.poll();
         }
         return (session);

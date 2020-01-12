@@ -90,6 +90,7 @@ public class StandardSession implements HttpSession, Session, Serializable {
     protected static final boolean LAST_ACCESS_AT_START;
 
     static {
+        // 是否遵循严格的Servlet规范约束
         STRICT_SERVLET_COMPLIANCE = Globals.STRICT_SERVLET_COMPLIANCE;
 
         String activityCheck = System.getProperty(
@@ -204,6 +205,7 @@ public class StandardSession implements HttpSession, Session, Serializable {
      * The maximum time interval, in seconds, between client requests before
      * the servlet container may invalidate this session.  A negative time
      * indicates that the session should never time out.
+     * 最大的幕间休息时间，秒。-1表示 永远不过期。
      */
     protected volatile int maxInactiveInterval = -1;
 
@@ -365,6 +367,7 @@ public class StandardSession implements HttpSession, Session, Serializable {
             manager.add(this);
 
         if (notify) {
+            // 通知新Session创建通知
             tellNew();
         }
     }
@@ -372,7 +375,7 @@ public class StandardSession implements HttpSession, Session, Serializable {
 
     /**
      * Inform the listeners about the new session.
-     *
+     * 通知监听器
      */
     public void tellNew() {
 
@@ -380,6 +383,7 @@ public class StandardSession implements HttpSession, Session, Serializable {
         fireSessionEvent(Session.SESSION_CREATED_EVENT, null);
 
         // Notify interested application event listeners
+        // 获取 Context 内部的 LifecycleListener，并判断是否为 HttpSessionListener
         Context context = manager.getContext();
         Object listeners[] = context.getApplicationLifecycleListeners();
         if (listeners != null && listeners.length > 0) {
@@ -526,6 +530,7 @@ public class StandardSession implements HttpSession, Session, Serializable {
 
     /**
      * Return the idle time from last client access time without invalidation check
+     *
      * @see #getIdleTime()
      */
     @Override
@@ -679,6 +684,7 @@ public class StandardSession implements HttpSession, Session, Serializable {
         if (maxInactiveInterval > 0) {
             int timeIdle = (int) (getIdleTimeInternal() / 1000L);
             if (timeIdle >= maxInactiveInterval) {
+                // 实际失效 Session 操作
                 expire(true);
             }
         }
@@ -771,7 +777,7 @@ public class StandardSession implements HttpSession, Session, Serializable {
     /**
      * Perform the internal processing required to invalidate this session,
      * without triggering an exception if the session has already expired.
-     *
+     * 失效 Session
      * @param notify Should we notify listeners about the demise of
      *  this session?
      */
@@ -819,9 +825,13 @@ public class StandardSession implements HttpSession, Session, Serializable {
                             HttpSessionListener listener =
                                 (HttpSessionListener) listeners[j];
                             try {
+                                // 发送事件通知
+                                // Session 销毁之前
                                 context.fireContainerEvent("beforeSessionDestroyed",
                                         listener);
+                                // Session 销毁
                                 listener.sessionDestroyed(event);
+                                // 触发 Session 销毁之后
                                 context.fireContainerEvent("afterSessionDestroyed",
                                         listener);
                             } catch (Throwable t) {
@@ -847,6 +857,7 @@ public class StandardSession implements HttpSession, Session, Serializable {
             }
 
             // Remove this session from our manager's active sessions
+            // 移除掉Session
             manager.remove(this, true);
 
             // Notify interested session event listeners
@@ -871,6 +882,7 @@ public class StandardSession implements HttpSession, Session, Serializable {
             expiring = false;
 
             // Unbind any objects associated with this session
+            // Session 最重要的功能就是存储数据了，可能存在强引用，而导致 Session 无法被 gc 回收，因此还要移除内部的 key/value 数据
             String keys[] = keys();
             ClassLoader oldContextClassLoader = null;
             try {

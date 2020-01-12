@@ -214,6 +214,7 @@ public class NioBlockingSelector {
     protected static class BlockPoller extends Thread {
         protected volatile boolean run = true;
         protected Selector selector = null;
+        // 同步队列
         protected final SynchronizedQueue<Runnable> events = new SynchronizedQueue<>();
         public void disable() { run = false; selector.wakeup();}
         protected final AtomicInteger wakeupCounter = new AtomicInteger(0);
@@ -283,6 +284,7 @@ public class NioBlockingSelector {
             return (size > 0);
         }
 
+
         @Override
         public void run() {
             while (run) {
@@ -292,9 +294,11 @@ public class NioBlockingSelector {
                     try {
                         int i = wakeupCounter.get();
                         if (i>0)
+                            // 获取键
                             keyCount = selector.selectNow();
                         else {
                             wakeupCounter.set(-1);
+                            // 阻塞1秒
                             keyCount = selector.select(1000);
                         }
                         wakeupCounter.set(0);
@@ -313,7 +317,7 @@ public class NioBlockingSelector {
                         log.error("",x);
                         continue;
                     }
-
+                    // 迭代触发的事件
                     Iterator<SelectionKey> iterator = keyCount > 0 ? selector.selectedKeys().iterator() : null;
 
                     // Walk through the collection of ready keys and dispatch
@@ -322,6 +326,7 @@ public class NioBlockingSelector {
                         SelectionKey sk = iterator.next();
                         NioSocketWrapper attachment = (NioSocketWrapper)sk.attachment();
                         try {
+                            // 移除迭代器
                             iterator.remove();
                             sk.interestOps(sk.interestOps() & (~sk.readyOps()));
                             if ( sk.isReadable() ) {

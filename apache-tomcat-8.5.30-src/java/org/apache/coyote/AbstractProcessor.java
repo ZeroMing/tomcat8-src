@@ -227,6 +227,7 @@ public abstract class AbstractProcessor extends AbstractProcessorLight implement
             }
         }
 
+        // 获取请求信息
         RequestInfo rp = request.getRequestProcessor();
         try {
             rp.setStage(org.apache.coyote.Constants.STAGE_SERVICE);

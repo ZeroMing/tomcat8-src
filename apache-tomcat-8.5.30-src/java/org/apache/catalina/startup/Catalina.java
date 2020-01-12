@@ -703,6 +703,7 @@ public class Catalina {
     public void start() {
 
         if (getServer() == null) {
+            // 加载Server配置
             load();
         }
 

@@ -686,6 +686,7 @@ public class Http11Processor extends AbstractProcessor {
 
             // Parsing the request header
             try {
+                // 解析请求行
                 if (!inputBuffer.parseRequestLine(keptAlive)) {
                     if (inputBuffer.getParsingRequestLinePhase() == -1) {
                         return SocketState.UPGRADING;
@@ -775,6 +776,7 @@ public class Http11Processor extends AbstractProcessor {
             }
 
             if (!getErrorState().isError()) {
+                // 设置过滤器，解析部分请求头
                 // Setting up filters, and parse some request headers
                 rp.setStage(org.apache.coyote.Constants.STAGE_PREPARE);
                 try {
@@ -989,6 +991,7 @@ public class Http11Processor extends AbstractProcessor {
             }
         }
 
+        // 请求头
         MimeHeaders headers = request.getMimeHeaders();
 
         // Check connection header

@@ -54,6 +54,9 @@ import org.apache.tomcat.util.ExceptionUtils;
  * reloading depends upon external calls to the <code>start()</code> and
  * <code>stop()</code> methods of this class at the correct times.
  *
+ * Manager接口的标准实现，提供了简单的session持久化，当组件重启的时候。
+ * 当整个Server被停止或者重启或者整个项目被重新加载。
+ *
  * @author Craig R. McClanahan
  */
 public class StandardManager extends ManagerBase {
@@ -205,6 +208,7 @@ public class StandardManager extends ManagerBase {
             }
 
             // Load the previously unloaded active sessions
+            // 加载之前为卸载的活跃的Session
             synchronized (sessions) {
                 try (ObjectInputStream ois = new CustomObjectInputStream(bis, classLoader, logger,
                         getSessionAttributeValueClassNamePattern(),
@@ -272,6 +276,8 @@ public class StandardManager extends ManagerBase {
      * mechanism, if any.  If persistence is not supported, this method
      * returns without doing anything.
      *
+     * 使用适当的持久化机制，保存当前活跃的sessions。
+     *
      * @exception IOException if an input/output error occurs
      */
     protected void doUnload() throws IOException {
@@ -325,10 +331,12 @@ public class StandardManager extends ManagerBase {
         while (expires.hasNext()) {
             StandardSession session = expires.next();
             try {
+                // 非过期
                 session.expire(false);
             } catch (Throwable t) {
                 ExceptionUtils.handleThrowable(t);
             } finally {
+                // 回收
                 session.recycle();
             }
         }

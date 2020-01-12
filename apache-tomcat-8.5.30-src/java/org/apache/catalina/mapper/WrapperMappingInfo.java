@@ -20,6 +20,7 @@ import org.apache.catalina.Wrapper;
 
 /**
  * Encapsulates information used to register a Wrapper mapping.
+ * 用于包装器映射的简要信息
  */
 public class WrapperMappingInfo {
 

@@ -431,7 +431,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
                 executor.start();
             }
         }
-        // TODO 2019-3-25
+        // 启动监听
         mapperListener.start();
 
         // Start our defined Connectors second
@@ -529,7 +529,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
     protected void initInternal() throws LifecycleException {
 
         super.initInternal();
-        // 初始化引擎
+        // engine 的 init
         if (engine != null) {
             engine.init();
         }

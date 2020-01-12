@@ -283,10 +283,12 @@ public final class Bootstrap {
      */
     public void init() throws Exception {
 
-        // 1. 初始化类加载器，知识点:java的类加载器类型
+        // 1. 初始化类加载器，
+        // 知识点:java的类加载器类型
         initClassLoaders();
 
         // 2. 当前线程设置【上下文类加载器】
+        // 破坏双亲委派模型
         Thread.currentThread().setContextClassLoader(catalinaLoader);
         // 3. 安全管理器设置类加载器。启动安全管理器。
         SecurityClassLoad.securityClassLoad(catalinaLoader);
@@ -294,6 +296,7 @@ public final class Bootstrap {
         // Load our startup class and call its process() method
         if (log.isDebugEnabled())
             log.debug("Loading startup class");
+
         // 反射获取启动类
         Class<?> startupClass = catalinaLoader.loadClass("org.apache.catalina.startup.Catalina");
         Object startupInstance = startupClass.getConstructor().newInstance();
